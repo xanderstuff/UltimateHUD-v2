@@ -1,9 +1,11 @@
-# Fabric Example Mod
+# UltimateHUD
 
-## Setup
+###### // TODO: make a mod description
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+Lore uhm lips yum dollar sit amet, consecutive... ok I forget how the rest goes
 
-## License
+---
+### License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+UltimateHUD is licensed under GNU LGPLv3. For more information, please see the
+[license](LICENSE).
