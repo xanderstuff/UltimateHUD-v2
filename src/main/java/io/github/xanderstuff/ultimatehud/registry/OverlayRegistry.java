@@ -10,14 +10,6 @@ import java.util.function.Supplier;
 public class OverlayRegistry {
     private static final Map<Identifier, Supplier<Overlay>> REGISTRY = new LinkedHashMap<>();
 
-    static {
-//        register(new Identifier("minecraft", "title"), TitleOverlay::getInstance);
-
-//        register(new Identifier(UltimateHud.MODID, "damage_flash"), DamageFlashOverlay::new);
-
-//        register(new Identifier(UltimateHud.MODID, "easteregg/popcat"), PopCatOverlay::getInstance);
-    }
-
     public static void register(Identifier identifier, Supplier<Overlay> overlaySupplier) {
         REGISTRY.put(identifier, overlaySupplier);
     }
