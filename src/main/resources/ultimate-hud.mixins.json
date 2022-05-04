@@ -3,10 +3,9 @@
   "minVersion": "0.8",
   "package": "io.github.xanderstuff.ultimatehud.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
-  ],
+  "mixins": [],
   "client": [
-    "ExampleMixin"
+    "hud.InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 public class UltimateHud implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("UltimateHUD");
+	public static final String MODID = "ultimate-hud";
 
 	@Override
 	public void onInitializeClient() {
