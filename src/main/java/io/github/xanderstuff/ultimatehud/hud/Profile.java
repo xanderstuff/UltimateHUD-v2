@@ -1,17 +1,27 @@
 package io.github.xanderstuff.ultimatehud.hud;
 
 import com.google.gson.annotations.Expose;
+import io.github.xanderstuff.ultimatehud.util.TreeNode;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 public class Profile {
     public final UUID uuid;
-    @Expose public final String name;
+    @Expose public String name;
 
-    @Expose public final LinkedList<Overlay> aboveHudOverlays;
-    @Expose public final LinkedList<Overlay> belowHudOverlays;
-    @Expose public final LinkedList<Widget> widgets;
-    @Expose public WidgetTreeNode widgetPositioningTreeRoot; //TODO: we're going to need to make a (Generic?) Tree for the Widget positioning structure
+    @Expose public final List<Overlay> aboveHudOverlays = new LinkedList<>();
+    @Expose public final List<Overlay> belowHudOverlays = new LinkedList<>();
+    @Expose public final List<Widget> widgetsInRenderingOrder = new LinkedList<>();
+    public final List<TreeNode<Widget>> widgetPositioningTree = new LinkedList<>(); //TODO: how should this be serialized?
 
+    private Widget findWidgetByUUID(UUID id){
+        for(Widget widget : widgetsInRenderingOrder){
+            if(widget.uuid.equals(id)){
+                return widget;
+            }
+        }
+        return null;
+    }
 }

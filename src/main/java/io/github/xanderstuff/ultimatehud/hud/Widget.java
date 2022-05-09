@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public abstract class Widget {
     //@Expose annotation tells GSON it should (de)serialize a field
-    public UUID uuid; //TODO: how do we want to serialize the UUID? as (key=uuid, value=Widget)? Just as another Widget field? or how else?
+    @Expose public UUID uuid;
     @Expose public Vector2d anchorPosition; // x and y axis should be 0.0 to 1.0, inclusive
     @Expose public Vector2d referencePosition; // x and y axis should be 0.0 to 1.0, inclusive
     @Expose public Vector2d offset;
@@ -40,8 +40,10 @@ public abstract class Widget {
 
     public abstract void render(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity player);
 
-    public void updatePosition(Vector2d parentPosition, Vector2d parentSize){
-//        Vector2d newPosition = new Vector2d();
-//        newPosition.add(parentPosition);
+    public void updatePosition(Vector2d parentPosition, Vector2d parentSize, PlayerEntity player){
+        cachedPosition = parentPosition
+                .add(anchorPosition.multiplyEntrywise(parentSize))
+                .add(offset)
+                .subtract(referencePosition.multiplyEntrywise(getSize(player)));
     }
 }
