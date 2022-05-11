@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [],
   "client": [
-    "hud.InGameHudMixin"
+    "hud.InGameHudMixin",
+    "hud.widgets.HotbarWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1
