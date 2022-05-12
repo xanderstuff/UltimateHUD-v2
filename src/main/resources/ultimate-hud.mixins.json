@@ -6,7 +6,8 @@
   "mixins": [],
   "client": [
     "hud.InGameHudMixin",
-    "hud.widgets.HotbarWidgetMixin"
+    "hud.widgets.HotbarWidgetMixin",
+    "hud.widgets.ExperienceBarWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1
