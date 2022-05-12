@@ -7,7 +7,7 @@ import net.minecraft.text.LiteralText;
 public class WidgetSelectionScreen extends Screen {
     private final Screen previousScreen;
 
-    protected WidgetSelectionScreen(Screen previousScreen) {
+    public WidgetSelectionScreen(Screen previousScreen) {
         super(new LiteralText("Ultimate HUD widget selection screen")); //TODO: put in language file
 
         this.previousScreen = previousScreen;
@@ -25,17 +25,23 @@ public class WidgetSelectionScreen extends Screen {
 
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        drawBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
+    public void onClose() {
+        client.setScreen(previousScreen);
+    }
+
+
+    @Override
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float tickDelta) {
+        drawBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, tickDelta);
 
         //...
     }
 
 
-    private void drawBackground(MatrixStack matrices) {
+    private void drawBackground(MatrixStack matrixStack) {
         if (client.world != null) {
-            fill(matrices, 0, 0, this.width, this.height, 0xC0101010);
+            fill(matrixStack, 0, 0, this.width, this.height, 0xC0101010);
         } else {
             renderBackgroundTexture(0);
         }
