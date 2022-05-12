@@ -8,17 +8,21 @@ import java.util.List;
 import java.util.UUID;
 
 public class Profile {
-    public final UUID uuid;
-    @Expose public String name;
+    //    public final UUID uuid;
+    @Expose
+    public String name;
 
-    @Expose public final List<Overlay> aboveHudOverlays = new LinkedList<>();
-    @Expose public final List<Overlay> belowHudOverlays = new LinkedList<>();
-    @Expose public final List<Widget> widgetsInRenderingOrder = new LinkedList<>();
+    @Expose
+    public final List<Overlay> aboveHudOverlays = new LinkedList<>();
+    @Expose
+    public final List<Overlay> belowHudOverlays = new LinkedList<>();
+    @Expose
+    public final List<Widget> widgetsInRenderingOrder = new LinkedList<>();
     public final List<TreeNode<Widget>> widgetPositioningTree = new LinkedList<>(); //TODO: how should this be serialized?
 
-    private Widget findWidgetByUUID(UUID id){
-        for(Widget widget : widgetsInRenderingOrder){
-            if(widget.uuid.equals(id)){
+    private Widget findWidgetByUUID(UUID id) {
+        for (Widget widget : widgetsInRenderingOrder) {
+            if (widget.uuid.equals(id)) {
                 return widget;
             }
         }

@@ -12,7 +12,7 @@ public class TreeNode<T> {
     private TreeNode<T> parent;
     private final List<TreeNode<T>> children = new LinkedList<>();
 
-    TreeNode(T data, @Nullable TreeNode<T> parent) {
+    public TreeNode(T data, @Nullable TreeNode<T> parent) {
         this.data = data;
         this.parent = parent;
     }
