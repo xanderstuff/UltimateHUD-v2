@@ -7,7 +7,8 @@
   "client": [
     "hud.InGameHudMixin",
     "hud.widgets.HotbarWidgetMixin",
-    "hud.widgets.ExperienceBarWidgetMixin"
+    "hud.widgets.ExperienceBarWidgetMixin",
+    "hud.widgets.ExperienceLevelWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1
