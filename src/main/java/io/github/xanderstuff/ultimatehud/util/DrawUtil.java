@@ -60,7 +60,7 @@ public class DrawUtil {
         final float ARROW_TIP_ANGLE = 45;
 
         matrixStack.push();
-        matrixStack.translate(x1 + 0.5, y1 + 0.5, 0);
+        matrixStack.translate(x1 - 0.5, y1 - 0.5, 0);
 
         // Draw main line
         matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(angle));

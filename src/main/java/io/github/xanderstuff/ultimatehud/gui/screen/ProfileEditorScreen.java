@@ -77,7 +77,7 @@ public class ProfileEditorScreen extends Screen {
         var widget = widgetTreeNode.get();
 
         // draw a small blue dot at the widget's calculated position (top left corner)
-        DrawUtil.drawBox(matrixStack, (int) widget.cachedPosition.x - 1, (int) widget.cachedPosition.y - 1, 2, 2, 0xFF4040FF);
+//        DrawUtil.drawBox(matrixStack, (int) widget.cachedPosition.x - 1, (int) widget.cachedPosition.y - 1, 2, 2, 0xFF4040FF);
 
         // draw a small green dot at the widget's reference position
         var refPos = widget.getReferenceScreenPosition(client.player);
@@ -87,8 +87,8 @@ public class ProfileEditorScreen extends Screen {
         var anchorPos = widget.getAnchorScreenPosition(parentPosition, parentSize);
         DrawUtil.drawBox(matrixStack, (int) anchorPos.x - 1, (int) anchorPos.y - 1, 2, 2, 0xFFFF4040);
 
-        // draw an arrow between the widget's anchor and reference positions (ie, this shows the offset)
-        DrawUtil.drawArrow(matrixStack, (int) refPos.x, (int) refPos.y, (int) anchorPos.x, (int) anchorPos.y, 0x80808080);
+        // draw an arrow between the widget's anchor and reference positions (this visualizes the offset)
+        DrawUtil.drawArrow(matrixStack, (int) anchorPos.x, (int) anchorPos.y, (int) refPos.x, (int) refPos.y, 0x80808080);
 
         // Recursion!
         for (TreeNode<Widget> next : widgetTreeNode.getChildren()) {
