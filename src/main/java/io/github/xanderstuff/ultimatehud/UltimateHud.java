@@ -23,7 +23,7 @@ public class UltimateHud implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        KeyBind profileEditorKB = KeyBindingHelper.registerKeyBinding(new KeyBind("keybinding.ultimate-hud.mainCategory.openProfileEditor", GLFW.GLFW_KEY_RIGHT_SHIFT, "keybinding.ultimate-hud.mainCategory"));
+        KeyBind profileEditorKB = KeyBindingHelper.registerKeyBinding(new KeyBind("key.ultimate-hud.open_profile_editor", GLFW.GLFW_KEY_RIGHT_SHIFT, "key.categories.ultimate-hud"));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (profileEditorKB.wasPressed()) {
