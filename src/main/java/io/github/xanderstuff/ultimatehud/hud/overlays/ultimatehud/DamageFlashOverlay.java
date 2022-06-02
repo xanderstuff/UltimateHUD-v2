@@ -30,9 +30,9 @@ public class DamageFlashOverlay extends Overlay {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, int width, int height, float tickDelta, PlayerEntity player) {
+    public void render(MatrixStack matrixStack, int x, int y, int windowWidth, int windowHeight, float tickDelta, PlayerEntity player) {
         //TODO: select different colors based on what category of damage is taken (such as green for poison damage and blueish-white for freezing)
         float opacity = (float) MathHelper.clampedMap(player.hurtTime, 0, 10, 0.0, 1.0);
-        DrawableHelper.fill(matrixStack, 0, 0, width, height, DrawUtil.multiplyOpacity(defaultDamageFlashColor, opacity));
+        DrawableHelper.fill(matrixStack, 0, 0, windowWidth, windowHeight, DrawUtil.multiplyOpacity(defaultDamageFlashColor, opacity));
     }
 }

@@ -14,5 +14,5 @@ public abstract class Overlay {
         return false;
     }
 
-    public abstract void render(MatrixStack matrixStack, int x, int y, int width, int height, float tickDelta, PlayerEntity player);
+    public abstract void render(MatrixStack matrixStack, int x, int y, int windowWidth, int windowHeight, float tickDelta, PlayerEntity player);
 }

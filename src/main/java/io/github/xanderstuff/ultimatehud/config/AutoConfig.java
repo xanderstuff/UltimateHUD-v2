@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 public abstract class AutoConfig {
     private static final Pattern INTEGER_ONLY = Pattern.compile("(-?[0-9]*)");
     private static final Pattern DECIMAL_ONLY = Pattern.compile("-?([\\d]+\\.?[\\d]*|[\\d]*\\.?[\\d]+|\\.)");
-    private static final Pattern HEXADECIMAL_ONLY = Pattern.compile("(-?[#0-9a-fA-F]*)");
+    private static final Pattern HEX_COLOR_ONLY = Pattern.compile("(-?[#0-9a-fA-F]*)");
 
     private static final List<EntryInfo> entries = new ArrayList<>();
 
@@ -105,7 +105,7 @@ public abstract class AutoConfig {
     private static void initClient(String configurableName, Field field, EntryInfo info) {
         Class<?> type = field.getType();
         Entry e = field.getAnnotation(Entry.class);
-        info.width = e != null ? e.width() : 0;
+        info.width = e != null ? e.maxLength() : 0;
         info.field = field;
         info.id = configurableName;
 
@@ -165,7 +165,7 @@ public abstract class AutoConfig {
 
             if (info.field.getAnnotation(Entry.class).isColor()) {
                 if (!s.contains("#")) s = '#' + s;
-                if (!HEXADECIMAL_ONLY.matcher(s).matches()) return false;
+                if (!HEX_COLOR_ONLY.matcher(s).matches()) return false;
                 try {
                     info.colorButton.setMessage(new LiteralText("⬛").setStyle(Style.EMPTY.withColor(Color.decode(info.tempValue).getRGB())));
                 } catch (Exception ignored) {
@@ -424,7 +424,7 @@ public abstract class AutoConfig {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface Entry {
-        int width() default 100;
+        int maxLength() default 100;
 
         double min() default Double.MIN_NORMAL;
 
