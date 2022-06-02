@@ -47,14 +47,14 @@ import java.util.regex.Pattern;
 public abstract class AutoConfig {
     private static final Pattern INTEGER_ONLY = Pattern.compile("(-?[0-9]*)");
     private static final Pattern DECIMAL_ONLY = Pattern.compile("-?([\\d]+\\.?[\\d]*|[\\d]*\\.?[\\d]+|\\.)");
-    private static final Pattern HEXADECIMAL_ONLY = Pattern.compile("(-?[#0-9a-fA-F]*)");
+    private static final Pattern HEX_COLOR_ONLY = Pattern.compile("(-?[#0-9a-fA-F]*)");
 
     private static final List<EntryInfo> entries = new ArrayList<>();
 
     protected static class EntryInfo {
         Field field;
         Object widget;
-        int width;
+        int maxLength;
         int max;
         Map.Entry<TextFieldWidget, Text> error;
         Object defaultValue;
@@ -105,7 +105,7 @@ public abstract class AutoConfig {
     private static void initClient(String configurableName, Field field, EntryInfo info) {
         Class<?> type = field.getType();
         Entry e = field.getAnnotation(Entry.class);
-        info.width = e != null ? e.width() : 0;
+        info.maxLength = e != null ? e.maxLength() : 0;
         info.field = field;
         info.id = configurableName;
 
@@ -165,7 +165,7 @@ public abstract class AutoConfig {
 
             if (info.field.getAnnotation(Entry.class).isColor()) {
                 if (!s.contains("#")) s = '#' + s;
-                if (!HEXADECIMAL_ONLY.matcher(s).matches()) return false;
+                if (!HEX_COLOR_ONLY.matcher(s).matches()) return false;
                 try {
                     info.colorButton.setMessage(new LiteralText("⬛").setStyle(Style.EMPTY.withColor(Color.decode(info.tempValue).getRGB())));
                 } catch (Exception ignored) {
@@ -281,7 +281,7 @@ public abstract class AutoConfig {
                     } else if (info.field.getType() == List.class) {
                         if (!reload) info.index = 0;
                         TextFieldWidget widget = new TextFieldWidget(textRenderer, width - 160, 0, 150, 20, null);
-                        widget.setMaxLength(info.width);
+                        widget.setMaxLength(info.maxLength);
                         if (info.index < ((List<String>) info.value).size())
                             widget.setText((String.valueOf(((List<String>) info.value).get(info.index))));
                         else widget.setText("");
@@ -301,7 +301,7 @@ public abstract class AutoConfig {
                         this.list.addButton(List.of(widget, resetButton, cycleButton), name);
                     } else if (info.widget != null) {
                         TextFieldWidget widget = new TextFieldWidget(textRenderer, width - 160, 0, 150, 20, null);
-                        widget.setMaxLength(info.width);
+                        widget.setMaxLength(info.maxLength);
                         widget.setText(info.tempValue);
                         Predicate<String> processor = ((BiFunction<TextFieldWidget, ButtonWidget, Predicate<String>>) info.widget).apply(widget, done);
                         widget.setTextPredicate(processor);
@@ -424,7 +424,7 @@ public abstract class AutoConfig {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface Entry {
-        int width() default 100;
+        int maxLength() default 100;
 
         double min() default Double.MIN_NORMAL;
 
