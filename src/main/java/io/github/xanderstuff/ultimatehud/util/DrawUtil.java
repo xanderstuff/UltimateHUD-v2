@@ -44,6 +44,23 @@ public class DrawUtil {
         return (argb & 0x00FFFFFF) | (newAlpha << 24);
     }
 
+    public static int setOpacity(int argb, float opacity) {
+        int newAlpha = MathHelper.clamp((int) (opacity * 255), 0, 255);
+        return (argb & 0x00FFFFFF) | (newAlpha << 24);
+    }
+
+    public static int decodeARGB(String string) {
+        try {
+            //TODO: FIX BUG: this will not interpret the alpha value from 8 digit HEX codes correctly, since it interprets all hex values as positive, yet we want the color to fit in a 4 byte signed int
+            //TODO: possible fix: parse as Long, then grab lowest 4 bytes as an int
+            // however it works for 6 digit HEX codes
+            return Integer.decode("#" + string.replace("#", "")); // force reading as a hex, even if no prefix is present
+        }
+        catch (NumberFormatException e){
+            return 0xFF000000; // if invalid, use black by default
+        }
+    }
+
     public static long timeMillis() {
         return System.currentTimeMillis() - startTime; // Offset by a fixed amount so that the return value starts at 0 (so we don't have precision issues when using this in calculations)
     }
