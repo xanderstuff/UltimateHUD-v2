@@ -25,6 +25,7 @@ public abstract class Widget {
 //    @Expose public int borderColor;
 
     public Vector2d cachedPosition = new Vector2d();
+    //TODO: maybe cache size as well?
 
     public abstract Identifier getIdentifier();
 
