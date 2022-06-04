@@ -67,18 +67,11 @@ public abstract class AutoConfig {
         ClickableWidget colorButton;
     }
 
-//    public static final Map<String, Class<?>> configClass = new HashMap<>();
-//    private static Path path;
-
-//    private static final Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).excludeFieldsWithModifiers(Modifier.PRIVATE).addSerializationExclusionStrategy(new HiddenAnnotationExclusionStrategy()).setPrettyPrinting().create();
 
     public static void init(String configurableName, Class<?> config, Object instance) {
-//        path = FabricLoader.getInstance().getConfigDir().resolve(modid + ".json");
-//        configClass.put(configurableName, config);
-
         for (Field field : config.getFields()) {
             EntryInfo info = new EntryInfo();
-            if ((field.isAnnotationPresent(Entry.class) || field.isAnnotationPresent(Comment.class)) && !field.isAnnotationPresent(Server.class))
+            if (field.isAnnotationPresent(Entry.class) || field.isAnnotationPresent(Comment.class))
                 if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
                     initClient(configurableName, field, info);
             if (field.isAnnotationPresent(Entry.class)) try {
@@ -86,11 +79,6 @@ public abstract class AutoConfig {
             } catch (IllegalAccessException ignored) {
             }
         }
-//        try {
-//            gson.fromJson(Files.newBufferedReader(path), config);
-//        } catch (Exception e) {
-//            write(modid);
-//        }
 
         for (EntryInfo info : entries) {
             if (info.field.isAnnotationPresent(Entry.class)) try {
@@ -175,15 +163,6 @@ public abstract class AutoConfig {
         };
     }
 
-//    public static void write(String modid) {
-//        path = FabricLoader.getInstance().getConfigDir().resolve(modid + ".json");
-//        try {
-//            if (!Files.exists(path)) Files.createFile(path);
-//            Files.write(path, gson.toJson(configClass.get(modid).getDeclaredConstructor().newInstance()).getBytes());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Environment(EnvType.CLIENT)
     public static Screen getScreen(Screen parent, String configurableName, Object instance) {
@@ -208,12 +187,6 @@ public abstract class AutoConfig {
         private boolean reload = false;
 
         private void loadValues() {
-//            try {
-//                gson.fromJson(Files.newBufferedReader(path), configClass.get(modid));
-//            } catch (Exception e) {
-//                write(modid);
-//            }
-
             for (EntryInfo info : entries) {
                 if (info.field.isAnnotationPresent(Entry.class)) try {
                     info.value = info.field.get(instance);
@@ -253,7 +226,6 @@ public abstract class AutoConfig {
                         } catch (IllegalAccessException ignored) {
                         }
                     }
-//                write(modid);
                 Objects.requireNonNull(client).setScreen(parent);
             }));
 
@@ -437,26 +409,6 @@ public abstract class AutoConfig {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    public @interface Client {
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.FIELD)
-    public @interface Server {
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.FIELD)
     public @interface Comment {
     }
-
-//    public static class HiddenAnnotationExclusionStrategy implements ExclusionStrategy {
-//        public boolean shouldSkipClass(Class<?> clazz) {
-//            return false;
-//        }
-//
-//        public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-//            return fieldAttributes.getAnnotation(Entry.class) == null;
-//        }
-//    }
 }
