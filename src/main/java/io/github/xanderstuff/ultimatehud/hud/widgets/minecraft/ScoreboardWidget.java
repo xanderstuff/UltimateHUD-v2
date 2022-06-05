@@ -105,6 +105,11 @@ public class ScoreboardWidget extends Widget {
             collection = list;
         }
 
+        if (list.size() == 0) {
+            // if there's no entries in the scoreboard, it is hidden
+            return 0;
+        }
+
         int maxEntryWidth = DrawUtil.getTextRenderer().getWidth(objective.getDisplayName());
         int spacing = DrawUtil.getTextRenderer().getWidth(": ");
         for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
@@ -134,11 +139,17 @@ public class ScoreboardWidget extends Widget {
 
         ScoreboardObjective objective = tempObjective != null ? tempObjective : scoreboard.getObjectiveForSlot(1);
         if (objective == null) {
-            // scoreboard is not rendered
+            // if there's no objective currently set, so the scoreboard is hidden
             return 0;
         }
 
-        return scoreboard.getAllPlayerScores(objective).size() * 9 + 10;
+        var numberOfEntries = scoreboard.getAllPlayerScores(objective).size();
+        if (numberOfEntries == 0) {
+            // if there's an objective set but no entries to display, then the scoreboard is also hidden
+            return 0;
+        } else {
+            return numberOfEntries * 9 + 10; // +10 pixels for the header (which shows the objective's displayName)
+        }
     }
 
     @Override
