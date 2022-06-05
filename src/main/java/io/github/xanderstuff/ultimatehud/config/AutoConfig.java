@@ -71,20 +71,26 @@ public abstract class AutoConfig {
     public static void init(String configurableName, Class<?> configurable, Object instance) {
         for (Field field : configurable.getFields()) {
             ConfigEntryData configEntryData = new ConfigEntryData();
-            if (field.isAnnotationPresent(ConfigEntry.class) || field.isAnnotationPresent(ConfigComment.class))
-                if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+            if (field.isAnnotationPresent(ConfigEntry.class) || field.isAnnotationPresent(ConfigComment.class)) {
+                if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
                     initClient(configurableName, field, configEntryData);
-            if (field.isAnnotationPresent(ConfigEntry.class)) try {
-                configEntryData.defaultValue = field.get(instance);
-            } catch (IllegalAccessException ignored) {
+                }
+            }
+            if (field.isAnnotationPresent(ConfigEntry.class)) {
+                try {
+                    configEntryData.defaultValue = field.get(instance);
+                } catch (IllegalAccessException ignored) {
+                }
             }
         }
 
         for (ConfigEntryData configEntryData : configEntries) {
-            if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) try {
-                configEntryData.value = configEntryData.field.get(instance);
-                configEntryData.tempValue = configEntryData.value.toString();
-            } catch (IllegalAccessException ignored) {
+            if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) {
+                try {
+                    configEntryData.value = configEntryData.field.get(instance);
+                    configEntryData.tempValue = configEntryData.value.toString();
+                } catch (IllegalAccessException ignored) {
+                }
             }
         }
     }
@@ -98,12 +104,16 @@ public abstract class AutoConfig {
         configEntryData.id = configurableName;
 
         if (configEntryAnnotation != null) {
-            if (!configEntryAnnotation.name().equals("")) configEntryData.name = new TranslatableText(configEntryAnnotation.name());
-            if (type == int.class) useTextFieldWidget(configEntryData, Integer::parseInt, INTEGER_ONLY, (int) configEntryAnnotation.min(), (int) configEntryAnnotation.max(), true);
-            else if (type == float.class)
+            if (!configEntryAnnotation.name().equals("")) {
+                configEntryData.name = new TranslatableText(configEntryAnnotation.name());
+            }
+            if (type == int.class) {
+                useTextFieldWidget(configEntryData, Integer::parseInt, INTEGER_ONLY, (int) configEntryAnnotation.min(), (int) configEntryAnnotation.max(), true);
+            } else if (type == float.class) {
                 useTextFieldWidget(configEntryData, Float::parseFloat, DECIMAL_ONLY, (float) configEntryAnnotation.min(), (float) configEntryAnnotation.max(), false);
-            else if (type == double.class) useTextFieldWidget(configEntryData, Double::parseDouble, DECIMAL_ONLY, configEntryAnnotation.min(), configEntryAnnotation.max(), false);
-            else if (type == String.class || type == List.class) {
+            } else if (type == double.class) {
+                useTextFieldWidget(configEntryData, Double::parseDouble, DECIMAL_ONLY, configEntryAnnotation.min(), configEntryAnnotation.max(), false);
+            } else if (type == String.class || type == List.class) {
                 configEntryData.max = configEntryAnnotation.max() == Double.MAX_VALUE ? Integer.MAX_VALUE : (int) configEntryAnnotation.max();
                 useTextFieldWidget(configEntryData, String::length, null, Math.min(configEntryAnnotation.min(), 0), Math.max(configEntryAnnotation.max(), 1), true);
             } else if (type == boolean.class) {
@@ -130,7 +140,9 @@ public abstract class AutoConfig {
             boolean isNumber = pattern != null;
 
             inputString = inputString.trim();
-            if (!(inputString.isEmpty() || !isNumber || pattern.matcher(inputString).matches())) return false;
+            if (!(inputString.isEmpty() || !isNumber || pattern.matcher(inputString).matches())) {
+                return false;
+            }
 
             Number value = 0;
             boolean inLimits = false;
@@ -146,15 +158,22 @@ public abstract class AutoConfig {
             configEntryData.inLimits = inLimits;
             buttonWidget.active = configEntries.stream().allMatch(entry -> entry.inLimits);
 
-            if (inLimits && configEntryData.field.getType() != List.class) configEntryData.value = isNumber ? value : inputString;
-            else if (inLimits) {
-                if (((List<String>) configEntryData.value).size() == configEntryData.index) ((List<String>) configEntryData.value).add("");
+            if (inLimits && configEntryData.field.getType() != List.class) {
+                configEntryData.value = isNumber ? value : inputString;
+            } else if (inLimits) {
+                if (((List<String>) configEntryData.value).size() == configEntryData.index) {
+                    ((List<String>) configEntryData.value).add("");
+                }
                 ((List<String>) configEntryData.value).set(configEntryData.index, Arrays.stream(configEntryData.tempValue.replace("[", "").replace("]", "").split(", ")).toList().get(0));
             }
 
             if (configEntryData.field.getAnnotation(ConfigEntry.class).isColor()) {
-                if (!inputString.contains("#")) inputString = '#' + inputString;
-                if (!HEX_COLOR_ONLY.matcher(inputString).matches()) return false;
+                if (!inputString.contains("#")) {
+                    inputString = '#' + inputString;
+                }
+                if (!HEX_COLOR_ONLY.matcher(inputString).matches()) {
+                    return false;
+                }
                 try {
                     configEntryData.colorButton.setMessage(new LiteralText("⬛").setStyle(Style.EMPTY.withColor(Color.decode(configEntryData.tempValue).getRGB())));
                 } catch (Exception ignored) {
@@ -189,10 +208,12 @@ public abstract class AutoConfig {
 
         private void loadValues() {
             for (ConfigEntryData configEntryData : configEntries) {
-                if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) try {
-                    configEntryData.value = configEntryData.field.get(instance);
-                    configEntryData.tempValue = configEntryData.value.toString();
-                } catch (IllegalAccessException ignored) {
+                if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) {
+                    try {
+                        configEntryData.value = configEntryData.field.get(instance);
+                        configEntryData.tempValue = configEntryData.value.toString();
+                    } catch (IllegalAccessException ignored) {
+                    }
                 }
             }
         }
@@ -212,7 +233,9 @@ public abstract class AutoConfig {
         @Override
         protected void init() {
             super.init();
-            if (!reload) loadValues();
+            if (!reload) {
+                loadValues();
+            }
 
             this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> {
                 loadValues();
@@ -220,18 +243,21 @@ public abstract class AutoConfig {
             }));
 
             ButtonWidget done = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 150, 20, ScreenTexts.DONE, (button) -> {
-                for (ConfigEntryData configEntryData : configEntries)
+                for (ConfigEntryData configEntryData : configEntries) {
                     if (configEntryData.id.equals(configurableName)) {
                         try {
                             configEntryData.field.set(instance, configEntryData.value);
                         } catch (IllegalAccessException ignored) {
                         }
                     }
+                }
                 Objects.requireNonNull(client).setScreen(parent);
             }));
 
             this.listWidget = new AutoConfigListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
-            if (this.client != null && this.client.world != null) this.listWidget.setRenderBackground(false);
+            if (this.client != null && this.client.world != null) {
+                this.listWidget.setRenderBackground(false);
+            }
             this.addSelectableChild(this.listWidget);
             for (ConfigEntryData configEntryData : configEntries) {
                 if (configEntryData.id.equals(configurableName)) {
@@ -248,16 +274,21 @@ public abstract class AutoConfig {
 
                     if (configEntryData.widget instanceof Map.Entry) {
                         Map.Entry<ButtonWidget.PressAction, Function<Object, Text>> widget = (Map.Entry<ButtonWidget.PressAction, Function<Object, Text>>) configEntryData.widget;
-                        if (configEntryData.field.getType().isEnum())
+                        if (configEntryData.field.getType().isEnum()) {
                             widget.setValue(value -> new TranslatableText(translationPrefix + "enum." + configEntryData.field.getType().getSimpleName() + "." + configEntryData.value.toString()));
+                        }
                         this.listWidget.addButton(List.of(new ButtonWidget(width - 160, 0, 150, 20, widget.getValue().apply(configEntryData.value), widget.getKey()), resetButton), name);
                     } else if (configEntryData.field.getType() == List.class) {
-                        if (!reload) configEntryData.index = 0;
+                        if (!reload) {
+                            configEntryData.index = 0;
+                        }
                         TextFieldWidget widget = new TextFieldWidget(textRenderer, width - 160, 0, 150, 20, null);
                         widget.setMaxLength(configEntryData.maxLength);
-                        if (configEntryData.index < ((List<String>) configEntryData.value).size())
+                        if (configEntryData.index < ((List<String>) configEntryData.value).size()) {
                             widget.setText((String.valueOf(((List<String>) configEntryData.value).get(configEntryData.index))));
-                        else widget.setText("");
+                        } else {
+                            widget.setText("");
+                        }
                         Predicate<String> processor = ((BiFunction<TextFieldWidget, ButtonWidget, Predicate<String>>) configEntryData.widget).apply(widget, done);
                         widget.setTextPredicate(processor);
                         resetButton.setWidth(20);
@@ -267,7 +298,9 @@ public abstract class AutoConfig {
                             double scrollAmount = listWidget.getScrollAmount();
                             this.reload = true;
                             configEntryData.index = configEntryData.index + 1;
-                            if (configEntryData.index > ((List<String>) configEntryData.value).size()) configEntryData.index = 0;
+                            if (configEntryData.index > ((List<String>) configEntryData.value).size()) {
+                                configEntryData.index = 0;
+                            }
                             Objects.requireNonNull(client).setScreen(this);
                             listWidget.setScrollAmount(scrollAmount);
                         }));
@@ -287,7 +320,9 @@ public abstract class AutoConfig {
 
                             configEntryData.colorButton = colorButton;
                             this.listWidget.addButton(List.of(widget, colorButton, resetButton), name);
-                        } else this.listWidget.addButton(List.of(widget, resetButton), name);
+                        } else {
+                            this.listWidget.addButton(List.of(widget, resetButton), name);
+                        }
                     } else {
                         this.listWidget.addButton(List.of(), name);
                     }
@@ -309,12 +344,13 @@ public abstract class AutoConfig {
                         Text name = new TranslatableText(this.translationPrefix + configEntryData.field.getName());
                         String key = translationPrefix + configEntryData.field.getName() + ".tooltip";
 
-                        if (configEntryData.error != null && text.equals(name))
+                        if (configEntryData.error != null && text.equals(name)) {
                             renderTooltip(matrices, configEntryData.error.getValue(), mouseX, mouseY);
-                        else if (I18n.hasTranslation(key) && text.equals(name)) {
+                        } else if (I18n.hasTranslation(key) && text.equals(name)) {
                             List<Text> list = new ArrayList<>();
-                            for (String str : I18n.translate(key).split("\n"))
+                            for (String str : I18n.translate(key).split("\n")) {
                                 list.add(new LiteralText(str));
+                            }
                             renderTooltip(matrices, list, mouseX, mouseY);
                         }
                     }
@@ -366,7 +402,9 @@ public abstract class AutoConfig {
         public static final Map<ClickableWidget, Text> buttonsWithText = new HashMap<>();
 
         private ButtonEntry(List<ClickableWidget> buttons, Text text) {
-            if (!buttons.isEmpty()) buttonsWithText.put(buttons.get(0), text);
+            if (!buttons.isEmpty()) {
+                buttonsWithText.put(buttons.get(0), text);
+            }
             this.buttons = buttons;
             this.text = text;
             children.addAll(buttons);
@@ -381,8 +419,9 @@ public abstract class AutoConfig {
                 button.y = y;
                 button.render(matrices, mouseX, mouseY, tickDelta);
             });
-            if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty()))
+            if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty())) {
                 DrawableHelper.drawTextWithShadow(matrices, textRenderer, text, 12, y + 5, 0xFFFFFF);
+            }
         }
 
         public List<? extends Element> children() {
