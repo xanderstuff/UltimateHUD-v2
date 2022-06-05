@@ -19,6 +19,11 @@ public class Vector2d {
         this.y = y;
     }
 
+    public void add(double x, double y) {
+        this.x += x;
+        this.y += y;
+    }
+
     public Vector2d copy() {
         return new Vector2d(this.x, this.y);
     }
