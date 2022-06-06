@@ -31,11 +31,6 @@ public class HotbarWidget extends Widget {
     }
 
     @Override
-    public String getName() {
-        return "Hotbar"; //TODO: use translation file
-    }
-
-    @Override
     public double getWidth(PlayerEntity player) {
         return 182;
     }

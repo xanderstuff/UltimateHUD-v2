@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class DamageFlashOverlay extends Overlay {
-    public static final Identifier IDENTIFIER = new Identifier("ultimate-hud", "damageflash");
+    public static final Identifier IDENTIFIER = new Identifier("ultimate-hud", "damage_flash");
     @Expose
     public int defaultDamageFlashColor = 0x64FF2020;
 
@@ -22,11 +22,6 @@ public class DamageFlashOverlay extends Overlay {
     @Override
     public Identifier getIdentifier() {
         return IDENTIFIER;
-    }
-
-    @Override
-    public String getName() {
-        return "Damage Flash";
     }
 
     @Override

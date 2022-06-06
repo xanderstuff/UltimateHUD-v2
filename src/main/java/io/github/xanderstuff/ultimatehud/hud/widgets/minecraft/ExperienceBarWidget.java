@@ -28,11 +28,6 @@ public class ExperienceBarWidget extends Widget {
     }
 
     @Override
-    public String getName() {
-        return "Experience Bar"; //TODO: use translation file
-    }
-
-    @Override
     public double getWidth(PlayerEntity player) {
         return 182;
     }

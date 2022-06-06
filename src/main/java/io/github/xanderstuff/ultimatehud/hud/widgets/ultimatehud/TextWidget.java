@@ -53,11 +53,6 @@ public class TextWidget extends Widget {
     }
 
     @Override
-    public String getName() {
-        return "Text"; //TODO: use translation file
-    }
-
-    @Override
     public double getWidth(PlayerEntity player) {
         var width = DrawUtil.getTextRenderer().getWidth(text) - 1 + (borderSize * 2);
         return width > 0 ? width : 9; //TODO: maybe there's a better way to show 0-sized widgets in the ProfileEditorScreen?

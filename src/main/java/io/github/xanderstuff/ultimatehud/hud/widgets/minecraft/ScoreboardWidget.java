@@ -70,11 +70,6 @@ public class ScoreboardWidget extends Widget {
     }
 
     @Override
-    public String getName() {
-        return "Scoreboard"; //TODO: use translation file
-    }
-
-    @Override
     public double getWidth(PlayerEntity player) {
         Scoreboard scoreboard = player.world.getScoreboard();
         ScoreboardObjective tempObjective = null;

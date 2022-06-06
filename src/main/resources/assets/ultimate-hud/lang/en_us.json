@@ -1,0 +1,44 @@
+{
+  "key.categories.ultimate-hud": "UltimateHUD",
+  "key.ultimate-hud.open_profile_editor": "Open Profile Editor",
+
+
+  "widget.ultimate-hud.minecraft_hotbar.name": "Hotbar",
+  "config.ultimate-hud.minecraft_hotbar.title": "Hotbar Settings",
+
+  "widget.ultimate-hud.minecraft_experience_bar.name": "Experience Bar",
+  "config.ultimate-hud.minecraft_experience_bar.title": "Experience Bar Settings",
+
+  "widget.ultimate-hud.minecraft_experience_level.name": "Experience Level",
+  "config.ultimate-hud.minecraft_experience_level.title": "Experience Level Settings",
+
+  "widget.ultimate-hud.minecraft_scoreboard.name": "Scoreboard",
+  "config.ultimate-hud.minecraft_scoreboard.title": "Scoreboard Settings",
+  "config.ultimate-hud.minecraft_scoreboard.hideScores": "Hide scores",
+  "config.ultimate-hud.minecraft_scoreboard.scoreTextColor": "Score text color",
+  "config.ultimate-hud.minecraft_scoreboard.headerBackgroundColor": "Header background color",
+  "config.ultimate-hud.minecraft_scoreboard.headerBackgroundOpacity": "Header background opacity",
+  "config.ultimate-hud.minecraft_scoreboard.headerTextColor": "Header text color",
+  "config.ultimate-hud.minecraft_scoreboard.backgroundColor": "Background color",
+  "config.ultimate-hud.minecraft_scoreboard.backgroundOpacity": "Background opacity",
+  "config.ultimate-hud.minecraft_scoreboard.playerTextColor": "Player text color",
+
+  "widget.ultimate-hud.ultimate-hud_text.name": "Text",
+  "config.ultimate-hud.ultimate-hud_text.title": "Text Settings",
+  "config.ultimate-hud.ultimate-hud_text.text": "Text to show",
+  "config.ultimate-hud.ultimate-hud_text.textColor": "Text color",
+  "config.ultimate-hud.ultimate-hud_text.textShadowType": "Text shadow type",
+  "config.ultimate-hud.ultimate-hud_text.enum.TextShadowType.NONE": "None",
+  "config.ultimate-hud.ultimate-hud_text.enum.TextShadowType.SHADOW": "Shadow",
+  "config.ultimate-hud.ultimate-hud_text.enum.TextShadowType.OUTLINE": "Outline",
+  "config.ultimate-hud.ultimate-hud_text.textShadowColor": "Text shadow color",
+  "config.ultimate-hud.ultimate-hud_text.borderSize": "Border size",
+  "config.ultimate-hud.ultimate-hud_text.backgroundColor": "Background color",
+  "config.ultimate-hud.ultimate-hud_text.backgroundOpacity": "Background opacity",
+
+  "widget.ultimate-hud.ultimate-hud_bar.name": "Bar",
+  "config.ultimate-hud.ultimate-hud_bar.title": "Bar Settings",
+
+  "overlay.ultimate-hud.ultimate-hud_damage_flash.name": "Damage Flash",
+  "config.ultimate-hud.ultimate-hud_damage_flash.title": "Damage Flash Settings"
+}

@@ -34,11 +34,6 @@ public class ExperienceLevelWidget extends Widget {
     }
 
     @Override
-    public String getName() {
-        return "Experience Level"; //TODO: use translation file
-    }
-
-    @Override
     public double getWidth(PlayerEntity player) {
         return DrawUtil.getTextRenderer().getWidth(String.valueOf(player.experienceLevel)) + 1;
     }
