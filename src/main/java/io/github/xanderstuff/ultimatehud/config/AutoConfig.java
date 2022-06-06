@@ -24,7 +24,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
-import java.awt.Color;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -51,18 +50,17 @@ public abstract class AutoConfig {
 
     private static final List<ConfigEntryData> configEntries = new ArrayList<>();
 
-    protected static class ConfigEntryData {
+    private static class ConfigEntryData {
         Field field;
         Object widget;
         int maxLength;
-        int max;
-        Map.Entry<TextFieldWidget, Text> error;
+        Text errorTooltipText;
         Object defaultValue;
         Object value;
         String tempValue;
         boolean inLimits = true;
-        String id;
-        Text name;
+        String id; //TODO: delete
+        Text name; //TODO: delete (it is redundant once initialization is put in the Screen creation)
         int index;
         ClickableWidget colorButton;
     }
@@ -84,16 +82,9 @@ public abstract class AutoConfig {
             }
         }
 
-        for (ConfigEntryData configEntryData : configEntries) {
-            if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) {
-                try {
-                    configEntryData.value = configEntryData.field.get(instance);
-                    configEntryData.tempValue = configEntryData.value.toString();
-                } catch (IllegalAccessException ignored) {
-                }
-            }
-        }
+        loadValues(instance);
     }
+
 
     @Environment(EnvType.CLIENT)
     private static void initClient(String configurableName, Field field, ConfigEntryData configEntryData) {
@@ -104,9 +95,13 @@ public abstract class AutoConfig {
         configEntryData.id = configurableName;
 
         if (configEntryAnnotation != null) {
-            if (!configEntryAnnotation.name().equals("")) {
+            if (configEntryAnnotation.name().equals("")) {
+                configEntryData.name = new TranslatableText("config." + UltimateHud.MODID + "." + configurableName + "." + configEntryData.field.getName());
+            } else {
                 configEntryData.name = new TranslatableText(configEntryAnnotation.name());
             }
+
+
             if (type == int.class) {
                 useTextFieldWidget(configEntryData, Integer::parseInt, INTEGER_ONLY, (int) configEntryAnnotation.min(), (int) configEntryAnnotation.max(), true);
             } else if (type == float.class) {
@@ -114,7 +109,6 @@ public abstract class AutoConfig {
             } else if (type == double.class) {
                 useTextFieldWidget(configEntryData, Double::parseDouble, DECIMAL_ONLY, configEntryAnnotation.min(), configEntryAnnotation.max(), false);
             } else if (type == String.class || type == List.class) {
-                configEntryData.max = configEntryAnnotation.max() == Double.MAX_VALUE ? Integer.MAX_VALUE : (int) configEntryAnnotation.max();
                 useTextFieldWidget(configEntryData, String::length, null, Math.min(configEntryAnnotation.min(), 0), Math.max(configEntryAnnotation.max(), 1), true);
             } else if (type == boolean.class) {
                 Function<Object, Text> textFunction = value -> new LiteralText((Boolean) value ? "True" : "False").formatted((Boolean) value ? Formatting.GREEN : Formatting.RED);
@@ -135,6 +129,20 @@ public abstract class AutoConfig {
         configEntries.add(configEntryData);
     }
 
+
+    private static void loadValues(Object instance) {
+        for (ConfigEntryData configEntryData : configEntries) {
+            if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) {
+                try {
+                    configEntryData.value = configEntryData.field.get(instance);
+                    configEntryData.tempValue = configEntryData.value.toString();
+                } catch (IllegalAccessException ignored) {
+                }
+            }
+        }
+    }
+
+
     private static void useTextFieldWidget(ConfigEntryData configEntryData, Function<String, Number> parseNumberFunction, Pattern pattern, double min, double max, boolean cast) {
         configEntryData.widget = (BiFunction<TextFieldWidget, ButtonWidget, Predicate<String>>) (textFieldWidget, buttonWidget) -> inputString -> {
             boolean isNumber = pattern != null;
@@ -146,11 +154,17 @@ public abstract class AutoConfig {
 
             Number value = 0;
             boolean inLimits = false;
-            configEntryData.error = null;
+            configEntryData.errorTooltipText = null;
             if (!(isNumber && inputString.isEmpty()) && !inputString.equals("-") && !inputString.equals(".")) {
                 value = parseNumberFunction.apply(inputString);
                 inLimits = value.doubleValue() >= min && value.doubleValue() <= max;
-                configEntryData.error = inLimits ? null : new AbstractMap.SimpleEntry<>(textFieldWidget, new LiteralText(value.doubleValue() < min ? "§cMinimum " + (isNumber ? "value" : "length") + (cast ? " is " + (int) min : " is " + min) : "§cMaximum " + (isNumber ? "value" : "length") + (cast ? " is " + (int) max : " is " + max)));
+                if (!inLimits) {
+                    if (value.doubleValue() < min) {
+                        configEntryData.errorTooltipText = new LiteralText("§cMinimum " + (isNumber ? "value" : "length") + (cast ? " is " + (int) min : " is " + min));
+                    } else {
+                        configEntryData.errorTooltipText = new LiteralText("§cMaximum " + (isNumber ? "value" : "length") + (cast ? " is " + (int) max : " is " + max));
+                    }
+                }
             }
 
             configEntryData.tempValue = inputString;
@@ -175,7 +189,7 @@ public abstract class AutoConfig {
                     return false;
                 }
                 try {
-                    configEntryData.colorButton.setMessage(new LiteralText("⬛").setStyle(Style.EMPTY.withColor(Color.decode(configEntryData.tempValue).getRGB())));
+                    configEntryData.colorButton.setMessage(new LiteralText("⬛").setStyle(Style.EMPTY.withColor(DrawUtil.decodeARGB(configEntryData.tempValue))));
                 } catch (Exception ignored) {
                 }
             }
@@ -189,9 +203,18 @@ public abstract class AutoConfig {
         return new AutoConfigScreen(parent, configurableName, instance);
     }
 
+
     @Environment(EnvType.CLIENT)
     private static class AutoConfigScreen extends Screen {
-        protected AutoConfigScreen(Screen parent, String configurableName, Object instance) {
+        private final String translationPrefix;
+        private final Screen parent;
+        private final String configurableName; //TODO: delete (it's for matching with configEntryData.id)
+        private final Object instance;
+        private AutoConfigListWidget listWidget;
+        private boolean reload = false;
+
+
+        private AutoConfigScreen(Screen parent, String configurableName, Object instance) {
             super(new TranslatableText("config." + UltimateHud.MODID + "." + configurableName + ".title"));
             this.parent = parent;
             this.configurableName = configurableName;
@@ -199,24 +222,6 @@ public abstract class AutoConfig {
             this.instance = instance;
         }
 
-        private final String translationPrefix;
-        private final Screen parent;
-        private final String configurableName;
-        private final Object instance;
-        private AutoConfigListWidget listWidget;
-        private boolean reload = false;
-
-        private void loadValues() {
-            for (ConfigEntryData configEntryData : configEntries) {
-                if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) {
-                    try {
-                        configEntryData.value = configEntryData.field.get(instance);
-                        configEntryData.tempValue = configEntryData.value.toString();
-                    } catch (IllegalAccessException ignored) {
-                    }
-                }
-            }
-        }
 
         @Override
         public void tick() {
@@ -230,18 +235,21 @@ public abstract class AutoConfig {
             }
         }
 
+
         @Override
         protected void init() {
             super.init();
             if (!reload) {
-                loadValues();
+                loadValues(instance);
             }
 
+            // CANCEL button
             this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> {
-                loadValues();
+                loadValues(instance);
                 Objects.requireNonNull(client).setScreen(parent);
             }));
 
+            // DONE button
             ButtonWidget done = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 150, 20, ScreenTexts.DONE, (button) -> {
                 for (ConfigEntryData configEntryData : configEntries) {
                     if (configEntryData.id.equals(configurableName)) {
@@ -254,14 +262,16 @@ public abstract class AutoConfig {
                 Objects.requireNonNull(client).setScreen(parent);
             }));
 
+            // List of settings
             this.listWidget = new AutoConfigListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
             if (this.client != null && this.client.world != null) {
                 this.listWidget.setRenderBackground(false);
             }
             this.addSelectableChild(this.listWidget);
+
+            // for each config setting, add the correct UI elements
             for (ConfigEntryData configEntryData : configEntries) {
                 if (configEntryData.id.equals(configurableName)) {
-                    Text name = Objects.requireNonNullElseGet(configEntryData.name, () -> new TranslatableText(translationPrefix + configEntryData.field.getName()));
                     ButtonWidget resetButton = new ButtonWidget(width - 205, 0, 40, 20, new TranslatableText("Reset"), (button -> {
                         configEntryData.value = configEntryData.defaultValue;
                         configEntryData.tempValue = configEntryData.defaultValue.toString();
@@ -273,11 +283,12 @@ public abstract class AutoConfig {
                     }));
 
                     if (configEntryData.widget instanceof Map.Entry) {
+                        //TODO: figure out what Field type(s) this code path corresponds to (and just check Field type instead)
                         Map.Entry<ButtonWidget.PressAction, Function<Object, Text>> widget = (Map.Entry<ButtonWidget.PressAction, Function<Object, Text>>) configEntryData.widget;
                         if (configEntryData.field.getType().isEnum()) {
                             widget.setValue(value -> new TranslatableText(translationPrefix + "enum." + configEntryData.field.getType().getSimpleName() + "." + configEntryData.value.toString()));
                         }
-                        this.listWidget.addButton(List.of(new ButtonWidget(width - 160, 0, 150, 20, widget.getValue().apply(configEntryData.value), widget.getKey()), resetButton), name);
+                        this.listWidget.addButton(List.of(new ButtonWidget(width - 160, 0, 150, 20, widget.getValue().apply(configEntryData.value), widget.getKey()), resetButton), configEntryData.name);
                     } else if (configEntryData.field.getType() == List.class) {
                         if (!reload) {
                             configEntryData.index = 0;
@@ -304,8 +315,9 @@ public abstract class AutoConfig {
                             Objects.requireNonNull(client).setScreen(this);
                             listWidget.setScrollAmount(scrollAmount);
                         }));
-                        this.listWidget.addButton(List.of(widget, resetButton, cycleButton), name);
+                        this.listWidget.addButton(List.of(widget, resetButton, cycleButton), configEntryData.name);
                     } else if (configEntryData.widget != null) {
+                        //TODO: figure out what Field type(s) this code path corresponds to (and just check Field type instead)
                         TextFieldWidget widget = new TextFieldWidget(textRenderer, width - 160, 0, 150, 20, null);
                         widget.setMaxLength(configEntryData.maxLength);
                         widget.setText(configEntryData.tempValue);
@@ -314,21 +326,22 @@ public abstract class AutoConfig {
                         if (configEntryData.field.getAnnotation(ConfigEntry.class).isColor()) {
                             resetButton.setWidth(20);
                             resetButton.setMessage(new LiteralText("R"));
-                            ButtonWidget colorButton = new ButtonWidget(width - 185, 0, 20, 20, new LiteralText("⬛"), (button -> {
-                            }));
-                            colorButton.setMessage(new LiteralText("⬛").setStyle(Style.EMPTY.withColor(DrawUtil.decodeARGB(configEntryData.tempValue))));
-
+                            var colorButtonText = new LiteralText("⬛").setStyle(Style.EMPTY.withColor(DrawUtil.decodeARGB(configEntryData.tempValue)));
+                            ButtonWidget colorButton = new ButtonWidget(width - 185, 0, 20, 20, colorButtonText, button -> {
+                            });
                             configEntryData.colorButton = colorButton;
-                            this.listWidget.addButton(List.of(widget, colorButton, resetButton), name);
+                            this.listWidget.addButton(List.of(widget, colorButton, resetButton), configEntryData.name);
                         } else {
-                            this.listWidget.addButton(List.of(widget, resetButton), name);
+                            this.listWidget.addButton(List.of(widget, resetButton), configEntryData.name);
                         }
                     } else {
-                        this.listWidget.addButton(List.of(), name);
+                        // TODO: check if true: I think this code path is for @Comments (and possibly for Fields that are an unsupported type)
+                        this.listWidget.addButton(List.of(), configEntryData.name);
                     }
                 }
             }
         }
+
 
         @Override
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -344,8 +357,8 @@ public abstract class AutoConfig {
                         Text name = new TranslatableText(this.translationPrefix + configEntryData.field.getName());
                         String key = translationPrefix + configEntryData.field.getName() + ".tooltip";
 
-                        if (configEntryData.error != null && text.equals(name)) {
-                            renderTooltip(matrices, configEntryData.error.getValue(), mouseX, mouseY);
+                        if (configEntryData.errorTooltipText != null && text.equals(name)) {
+                            renderTooltip(matrices, configEntryData.errorTooltipText, mouseX, mouseY);
                         } else if (I18n.hasTranslation(key) && text.equals(name)) {
                             List<Text> list = new ArrayList<>();
                             for (String str : I18n.translate(key).split("\n")) {
@@ -360,9 +373,11 @@ public abstract class AutoConfig {
         }
     }
 
+
     @Environment(EnvType.CLIENT)
     public static class AutoConfigListWidget extends ElementListWidget<ButtonEntry> {
         TextRenderer textRenderer;
+
 
         public AutoConfigListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
             super(minecraftClient, i, j, k, l, m);
@@ -370,19 +385,23 @@ public abstract class AutoConfig {
             textRenderer = minecraftClient.textRenderer;
         }
 
+
         @Override
         public int getScrollbarPositionX() {
             return this.width - 7;
         }
 
+
         public void addButton(List<ClickableWidget> buttons, Text text) {
             this.addEntry(ButtonEntry.create(buttons, text));
         }
+
 
         @Override
         public int getRowWidth() {
             return 10000;
         }
+
 
         public Optional<ClickableWidget> getHoveredButton(double mouseX, double mouseY) {
             for (ButtonEntry buttonEntry : this.children()) {
@@ -394,12 +413,14 @@ public abstract class AutoConfig {
         }
     }
 
+
     public static class ButtonEntry extends ElementListWidget.Entry<ButtonEntry> {
         private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         public final List<ClickableWidget> buttons;
         private final Text text;
         private final List<ClickableWidget> children = new ArrayList<>();
         public static final Map<ClickableWidget, Text> buttonsWithText = new HashMap<>();
+
 
         private ButtonEntry(List<ClickableWidget> buttons, Text text) {
             if (!buttons.isEmpty()) {
@@ -410,9 +431,11 @@ public abstract class AutoConfig {
             children.addAll(buttons);
         }
 
+
         public static ButtonEntry create(List<ClickableWidget> buttons, Text text) {
             return new ButtonEntry(buttons, text);
         }
+
 
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             buttons.forEach(button -> {
@@ -424,9 +447,11 @@ public abstract class AutoConfig {
             }
         }
 
+
         public List<? extends Element> children() {
             return children;
         }
+
 
         public List<? extends Selectable> selectableChildren() {
             return children;
@@ -444,7 +469,7 @@ public abstract class AutoConfig {
 
         String name() default "";
 
-        boolean isColor() default false;
+        boolean isColor() default false; //TODO: remove isColor() and support "Color" variable type or similar instead
     }
 
     @Retention(RetentionPolicy.RUNTIME)
