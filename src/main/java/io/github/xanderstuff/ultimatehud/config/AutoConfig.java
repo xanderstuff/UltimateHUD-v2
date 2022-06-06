@@ -4,7 +4,6 @@ import io.github.xanderstuff.ultimatehud.UltimateHud;
 import io.github.xanderstuff.ultimatehud.util.DrawUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -48,7 +47,6 @@ public abstract class AutoConfig {
     private static final Pattern DECIMAL_ONLY = Pattern.compile("-?([\\d]+\\.?[\\d]*|[\\d]*\\.?[\\d]+|\\.)");
     private static final Pattern HEX_COLOR_ONLY = Pattern.compile("(-?[#0-9a-fA-F]*)");
 
-    private static final List<ConfigEntryData> configEntries = new ArrayList<>();
 
     private static class ConfigEntryData {
         Field field;
@@ -66,138 +64,6 @@ public abstract class AutoConfig {
     }
 
 
-    public static void init(String configurableName, Class<?> configurable, Object instance) {
-        for (Field field : configurable.getFields()) {
-            ConfigEntryData configEntryData = new ConfigEntryData();
-            if (field.isAnnotationPresent(ConfigEntry.class) || field.isAnnotationPresent(ConfigComment.class)) {
-                if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-                    initClient(configurableName, field, configEntryData);
-                }
-            }
-            if (field.isAnnotationPresent(ConfigEntry.class)) {
-                try {
-                    configEntryData.defaultValue = field.get(instance);
-                } catch (IllegalAccessException ignored) {
-                }
-            }
-        }
-
-        loadValues(instance);
-    }
-
-
-    @Environment(EnvType.CLIENT)
-    private static void initClient(String configurableName, Field field, ConfigEntryData configEntryData) {
-        Class<?> type = field.getType();
-        ConfigEntry configEntryAnnotation = field.getAnnotation(ConfigEntry.class);
-        configEntryData.maxLength = configEntryAnnotation != null ? configEntryAnnotation.maxLength() : 0;
-        configEntryData.field = field;
-        configEntryData.id = configurableName;
-
-        if (configEntryAnnotation != null) {
-            if (configEntryAnnotation.name().equals("")) {
-                configEntryData.name = new TranslatableText("config." + UltimateHud.MODID + "." + configurableName + "." + configEntryData.field.getName());
-            } else {
-                configEntryData.name = new TranslatableText(configEntryAnnotation.name());
-            }
-
-
-            if (type == int.class) {
-                useTextFieldWidget(configEntryData, Integer::parseInt, INTEGER_ONLY, (int) configEntryAnnotation.min(), (int) configEntryAnnotation.max(), true);
-            } else if (type == float.class) {
-                useTextFieldWidget(configEntryData, Float::parseFloat, DECIMAL_ONLY, (float) configEntryAnnotation.min(), (float) configEntryAnnotation.max(), false);
-            } else if (type == double.class) {
-                useTextFieldWidget(configEntryData, Double::parseDouble, DECIMAL_ONLY, configEntryAnnotation.min(), configEntryAnnotation.max(), false);
-            } else if (type == String.class || type == List.class) {
-                useTextFieldWidget(configEntryData, String::length, null, Math.min(configEntryAnnotation.min(), 0), Math.max(configEntryAnnotation.max(), 1), true);
-            } else if (type == boolean.class) {
-                Function<Object, Text> textFunction = value -> new LiteralText((Boolean) value ? "True" : "False").formatted((Boolean) value ? Formatting.GREEN : Formatting.RED);
-                configEntryData.widget = new AbstractMap.SimpleEntry<ButtonWidget.PressAction, Function<Object, Text>>(button -> {
-                    configEntryData.value = !(Boolean) configEntryData.value;
-                    button.setMessage(textFunction.apply(configEntryData.value));
-                }, textFunction);
-            } else if (type.isEnum()) {
-                List<?> values = Arrays.asList(field.getType().getEnumConstants());
-                Function<Object, Text> textFunction = value -> new TranslatableText("config." + UltimateHud.MODID + "." + configurableName + ".enum." + configEntryData.field.getType().getSimpleName() + "." + configEntryData.value.toString());
-                configEntryData.widget = new AbstractMap.SimpleEntry<ButtonWidget.PressAction, Function<Object, Text>>(button -> {
-                    int index = values.indexOf(configEntryData.value) + 1;
-                    configEntryData.value = values.get(index >= values.size() ? 0 : index);
-                    button.setMessage(textFunction.apply(configEntryData.value));
-                }, textFunction);
-            }
-        }
-        configEntries.add(configEntryData);
-    }
-
-
-    private static void loadValues(Object instance) {
-        for (ConfigEntryData configEntryData : configEntries) {
-            if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) {
-                try {
-                    configEntryData.value = configEntryData.field.get(instance);
-                    configEntryData.tempValue = configEntryData.value.toString();
-                } catch (IllegalAccessException ignored) {
-                }
-            }
-        }
-    }
-
-
-    private static void useTextFieldWidget(ConfigEntryData configEntryData, Function<String, Number> parseNumberFunction, Pattern pattern, double min, double max, boolean cast) {
-        configEntryData.widget = (BiFunction<TextFieldWidget, ButtonWidget, Predicate<String>>) (textFieldWidget, buttonWidget) -> inputString -> {
-            boolean isNumber = pattern != null;
-
-            inputString = inputString.trim();
-            if (!(inputString.isEmpty() || !isNumber || pattern.matcher(inputString).matches())) {
-                return false;
-            }
-
-            Number value = 0;
-            boolean inLimits = false;
-            configEntryData.errorTooltipText = null;
-            if (!(isNumber && inputString.isEmpty()) && !inputString.equals("-") && !inputString.equals(".")) {
-                value = parseNumberFunction.apply(inputString);
-                inLimits = value.doubleValue() >= min && value.doubleValue() <= max;
-                if (!inLimits) {
-                    if (value.doubleValue() < min) {
-                        configEntryData.errorTooltipText = new LiteralText("§cMinimum " + (isNumber ? "value" : "length") + (cast ? " is " + (int) min : " is " + min));
-                    } else {
-                        configEntryData.errorTooltipText = new LiteralText("§cMaximum " + (isNumber ? "value" : "length") + (cast ? " is " + (int) max : " is " + max));
-                    }
-                }
-            }
-
-            configEntryData.tempValue = inputString;
-            textFieldWidget.setEditableColor(inLimits ? 0xFFFFFFFF : 0xFFFF7777);
-            configEntryData.inLimits = inLimits;
-            buttonWidget.active = configEntries.stream().allMatch(entry -> entry.inLimits);
-
-            if (inLimits && configEntryData.field.getType() != List.class) {
-                configEntryData.value = isNumber ? value : inputString;
-            } else if (inLimits) {
-                if (((List<String>) configEntryData.value).size() == configEntryData.index) {
-                    ((List<String>) configEntryData.value).add("");
-                }
-                ((List<String>) configEntryData.value).set(configEntryData.index, Arrays.stream(configEntryData.tempValue.replace("[", "").replace("]", "").split(", ")).toList().get(0));
-            }
-
-            if (configEntryData.field.getAnnotation(ConfigEntry.class).isColor()) {
-                if (!inputString.contains("#")) {
-                    inputString = '#' + inputString;
-                }
-                if (!HEX_COLOR_ONLY.matcher(inputString).matches()) {
-                    return false;
-                }
-                try {
-                    configEntryData.colorButton.setMessage(new LiteralText("⬛").setStyle(Style.EMPTY.withColor(DrawUtil.decodeARGB(configEntryData.tempValue))));
-                } catch (Exception ignored) {
-                }
-            }
-            return true;
-        };
-    }
-
-
     @Environment(EnvType.CLIENT)
     public static Screen getScreen(Screen parent, String configurableName, Object instance) {
         return new AutoConfigScreen(parent, configurableName, instance);
@@ -212,6 +78,7 @@ public abstract class AutoConfig {
         private final Object instance;
         private AutoConfigListWidget listWidget;
         private boolean reload = false;
+        private final List<ConfigEntryData> configEntries = new ArrayList<>();
 
 
         private AutoConfigScreen(Screen parent, String configurableName, Object instance) {
@@ -220,6 +87,131 @@ public abstract class AutoConfig {
             this.configurableName = configurableName;
             this.translationPrefix = "config." + UltimateHud.MODID + "." + configurableName + ".";
             this.instance = instance;
+            scanForEntries(configurableName, instance);
+        }
+
+
+        private void scanForEntries(String configurableName, Object instance) {
+            for (Field field : instance.getClass().getFields()) {
+                ConfigEntryData configEntryData = new ConfigEntryData();
+                if (field.isAnnotationPresent(ConfigEntry.class) || field.isAnnotationPresent(ConfigComment.class)) {
+                    Class<?> type = field.getType();
+                    ConfigEntry configEntryAnnotation = field.getAnnotation(ConfigEntry.class);
+                    configEntryData.maxLength = configEntryAnnotation != null ? configEntryAnnotation.maxLength() : 0;
+                    configEntryData.field = field;
+                    configEntryData.id = configurableName;
+
+                    if (configEntryAnnotation != null) {
+                        if (configEntryAnnotation.name().equals("")) {
+                            configEntryData.name = new TranslatableText("config." + UltimateHud.MODID + "." + configurableName + "." + configEntryData.field.getName());
+                        } else {
+                            configEntryData.name = new TranslatableText(configEntryAnnotation.name());
+                        }
+
+
+                        if (type == int.class) {
+                            useTextFieldWidget(configEntryData, Integer::parseInt, INTEGER_ONLY, (int) configEntryAnnotation.min(), (int) configEntryAnnotation.max(), true);
+                        } else if (type == float.class) {
+                            useTextFieldWidget(configEntryData, Float::parseFloat, DECIMAL_ONLY, (float) configEntryAnnotation.min(), (float) configEntryAnnotation.max(), false);
+                        } else if (type == double.class) {
+                            useTextFieldWidget(configEntryData, Double::parseDouble, DECIMAL_ONLY, configEntryAnnotation.min(), configEntryAnnotation.max(), false);
+                        } else if (type == String.class || type == List.class) {
+                            useTextFieldWidget(configEntryData, String::length, null, Math.min(configEntryAnnotation.min(), 0), Math.max(configEntryAnnotation.max(), 1), true);
+                        } else if (type == boolean.class) {
+                            Function<Object, Text> textFunction = value -> new LiteralText((Boolean) value ? "True" : "False").formatted((Boolean) value ? Formatting.GREEN : Formatting.RED);
+                            configEntryData.widget = new AbstractMap.SimpleEntry<ButtonWidget.PressAction, Function<Object, Text>>(button -> {
+                                configEntryData.value = !(Boolean) configEntryData.value;
+                                button.setMessage(textFunction.apply(configEntryData.value));
+                            }, textFunction);
+                        } else if (type.isEnum()) {
+                            List<?> values = Arrays.asList(field.getType().getEnumConstants());
+                            Function<Object, Text> textFunction = value -> new TranslatableText("config." + UltimateHud.MODID + "." + configurableName + ".enum." + configEntryData.field.getType().getSimpleName() + "." + configEntryData.value.toString());
+                            configEntryData.widget = new AbstractMap.SimpleEntry<ButtonWidget.PressAction, Function<Object, Text>>(button -> {
+                                int index = values.indexOf(configEntryData.value) + 1;
+                                configEntryData.value = values.get(index >= values.size() ? 0 : index);
+                                button.setMessage(textFunction.apply(configEntryData.value));
+                            }, textFunction);
+                        }
+                    }
+                    configEntries.add(configEntryData);
+                }
+                if (field.isAnnotationPresent(ConfigEntry.class)) {
+                    try {
+                        configEntryData.defaultValue = field.get(instance);
+                    } catch (IllegalAccessException ignored) {
+                    }
+                }
+            }
+
+            loadValues(instance);
+        }
+
+
+        private void loadValues(Object instance) {
+            for (ConfigEntryData configEntryData : configEntries) {
+                if (configEntryData.field.isAnnotationPresent(ConfigEntry.class)) {
+                    try {
+                        configEntryData.value = configEntryData.field.get(instance);
+                        configEntryData.tempValue = configEntryData.value.toString();
+                    } catch (IllegalAccessException ignored) {
+                    }
+                }
+            }
+        }
+
+
+        private void useTextFieldWidget(ConfigEntryData configEntryData, Function<String, Number> parseNumberFunction, Pattern pattern, double min, double max, boolean cast) {
+            configEntryData.widget = (BiFunction<TextFieldWidget, ButtonWidget, Predicate<String>>) (textFieldWidget, buttonWidget) -> inputString -> {
+                boolean isNumber = pattern != null;
+
+                inputString = inputString.trim();
+                if (!(inputString.isEmpty() || !isNumber || pattern.matcher(inputString).matches())) {
+                    return false;
+                }
+
+                Number value = 0;
+                boolean inLimits = false;
+                configEntryData.errorTooltipText = null;
+                if (!(isNumber && inputString.isEmpty()) && !inputString.equals("-") && !inputString.equals(".")) {
+                    value = parseNumberFunction.apply(inputString);
+                    inLimits = value.doubleValue() >= min && value.doubleValue() <= max;
+                    if (!inLimits) {
+                        if (value.doubleValue() < min) {
+                            configEntryData.errorTooltipText = new LiteralText("§cMinimum " + (isNumber ? "value" : "length") + (cast ? " is " + (int) min : " is " + min));
+                        } else {
+                            configEntryData.errorTooltipText = new LiteralText("§cMaximum " + (isNumber ? "value" : "length") + (cast ? " is " + (int) max : " is " + max));
+                        }
+                    }
+                }
+
+                configEntryData.tempValue = inputString;
+                textFieldWidget.setEditableColor(inLimits ? 0xFFFFFFFF : 0xFFFF7777);
+                configEntryData.inLimits = inLimits;
+                buttonWidget.active = configEntries.stream().allMatch(entry -> entry.inLimits);
+
+                if (inLimits && configEntryData.field.getType() != List.class) {
+                    configEntryData.value = isNumber ? value : inputString;
+                } else if (inLimits) {
+                    if (((List<String>) configEntryData.value).size() == configEntryData.index) {
+                        ((List<String>) configEntryData.value).add("");
+                    }
+                    ((List<String>) configEntryData.value).set(configEntryData.index, Arrays.stream(configEntryData.tempValue.replace("[", "").replace("]", "").split(", ")).toList().get(0));
+                }
+
+                if (configEntryData.field.getAnnotation(ConfigEntry.class).isColor()) {
+                    if (!inputString.contains("#")) {
+                        inputString = '#' + inputString;
+                    }
+                    if (!HEX_COLOR_ONLY.matcher(inputString).matches()) {
+                        return false;
+                    }
+                    try {
+                        configEntryData.colorButton.setMessage(new LiteralText("⬛").setStyle(Style.EMPTY.withColor(DrawUtil.decodeARGB(configEntryData.tempValue))));
+                    } catch (Exception ignored) {
+                    }
+                }
+                return true;
+            };
         }
 
 
