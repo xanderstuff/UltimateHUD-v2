@@ -12,9 +12,9 @@ public class ExperienceLevelWidget extends Widget {
     public static final Identifier IDENTIFIER = new Identifier("minecraft", "experience_level");
     private static final ExperienceLevelWidget INSTANCE = new ExperienceLevelWidget();
     @Expose
-    public int textColor;
+    public int textColor = 0xFF80FF20;
     @Expose
-    public int outlineColor;
+    public int outlineColor = 0xFF000000;
 
     static {
         WidgetRegistry.register(IDENTIFIER, ExperienceLevelWidget::getInstance);

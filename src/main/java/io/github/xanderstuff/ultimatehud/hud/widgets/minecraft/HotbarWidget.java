@@ -11,7 +11,7 @@ public class HotbarWidget extends Widget {
     public static final Identifier IDENTIFIER = new Identifier("minecraft", "hotbar");
     private static final HotbarWidget INSTANCE = new HotbarWidget();
     @Expose
-    public boolean twirlBlocks; //TODO: make this an enum for different item movement effects (like item entity -style rotation)
+    public boolean twirlBlocks = false; //TODO: make this an enum for different item movement effects (like item entity -style rotation)
 
     static {
         WidgetRegistry.register(IDENTIFIER, HotbarWidget::getInstance);
