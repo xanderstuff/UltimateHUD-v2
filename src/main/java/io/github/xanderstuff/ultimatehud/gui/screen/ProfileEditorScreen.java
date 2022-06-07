@@ -1,10 +1,11 @@
 package io.github.xanderstuff.ultimatehud.gui.screen;
 
-import io.github.xanderstuff.ultimatehud.UltimateHud;
 import io.github.xanderstuff.ultimatehud.config.AutoConfig;
 import io.github.xanderstuff.ultimatehud.hud.HudManager;
 import io.github.xanderstuff.ultimatehud.hud.Widget;
 import io.github.xanderstuff.ultimatehud.hud.overlays.ultimatehud.DamageFlashOverlay;
+import io.github.xanderstuff.ultimatehud.hud.widgets.ultimatehud.TextWidget;
+import io.github.xanderstuff.ultimatehud.registry.WidgetRegistry;
 import io.github.xanderstuff.ultimatehud.util.DrawUtil;
 import io.github.xanderstuff.ultimatehud.util.TreeNode;
 import io.github.xanderstuff.ultimatehud.util.Vector2d;
@@ -13,8 +14,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import org.jetbrains.annotations.Nullable;
 
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
+import java.util.function.Supplier;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class ProfileEditorScreen extends Screen {
     private static final int WIDGET_OVERLAY_COLOR = 0x802050FF; //blue
@@ -23,6 +25,23 @@ public class ProfileEditorScreen extends Screen {
     private final Screen previousScreen;
     private Widget hoveredWidget = null;
     private Widget selectedWidget = null;
+
+    //TODO: remove this temporary widget selection code
+    private WidgetToAdd widgetToAdd = WidgetToAdd.TEXT;
+    private enum WidgetToAdd {
+        TEXT("Text", () -> WidgetRegistry.get(TextWidget.IDENTIFIER)),
+        TEXT3("Text3", () -> WidgetRegistry.get(TextWidget.IDENTIFIER)),
+        TEXT2("Text2", () -> WidgetRegistry.get(TextWidget.IDENTIFIER));
+
+        String name;
+        Supplier<Widget> makeWidget;
+
+        WidgetToAdd(String name, Supplier<Widget> makeWidget) {
+            this.name = name;
+            this.makeWidget = makeWidget;
+        }
+    }
+
 
     public ProfileEditorScreen(Screen previousScreen) {
         super(new LiteralText("Ultimate HUD profile editor screen")); //TODO: put in language file
@@ -48,12 +67,29 @@ public class ProfileEditorScreen extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float tickDelta) {
         super.render(matrixStack, mouseX, mouseY, tickDelta); // we probably don't need this
-
-        //TESTING:
-//        HotbarWidget.getInstance().offset = new Vector2d(mouseX-100, -mouseY);
-
-
         hoveredWidget = locateWidget(mouseX, mouseY);
+
+        //TODO: remove this temporary instructions message
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Hi there!", 48, 32, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "You've found the UltimateHUD Editor Screen", 48, 32 + 9 * 1, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "This mod is a WIP, so this editor isn't finished", 48, 32 + 9 * 2, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Drag to move widgets", 48, 32 + 9 * 3, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Left click to select a widget", 48, 32 + 9 * 4, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Right click to change a widget's settings", 48, 32 + 9 * 5, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- WASD / Arrow keys to move a selected widget by 1px", 48, 32 + 9 * 6, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Scroll wheel to choose a new widget", 48, 32 + 9 * 7, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Middle click to add a new widget", 48, 32 + 9 * 8, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget to add: " + widgetToAdd.name, 48, 32 + 9 * 9, 0x80FFFFFF);
+
+        String name = "";
+        String id = "";
+        if (hoveredWidget != null) {
+            name = hoveredWidget.getName();
+            id = hoveredWidget.getIdentifier().toString();
+        }
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget name: " + name, 48, 32 + 9 * 10, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget ID: " + id, 48, 32 + 9 * 11, 0x80FFFFFF);
+
 
         for (Widget widget : HudManager.currentProfile.widgetsInRenderingOrder) {
             // draw a blue box on top of *all widgets
@@ -90,8 +126,27 @@ public class ProfileEditorScreen extends Screen {
             return onLeftMouseClick(mouseX, mouseY);
         } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             return onRightMouseClick(mouseX, mouseY);
+        } else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+            //TODO: remove this temporary widget selection code
+//            var newWidget = (TextWidget) WidgetRegistry.get(TextWidget.IDENTIFIER);
+            var newWidget = widgetToAdd.makeWidget.get();
+            newWidget.referencePosition = new Vector2d(0.0, 0.0);
+            newWidget.offset = new Vector2d(mouseX, mouseY);
+            newWidget.anchorPosition = new Vector2d(0.0, 0.0);
+            HudManager.currentProfile.widgetsInRenderingOrder.add(newWidget);
+            HudManager.currentProfile.widgetPositioningTree.add(new TreeNode<Widget>(newWidget, null));
+            return true;
         }
         return false;
+    }
+
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        //TODO: remove this temporary widget selection code
+        int index = widgetToAdd.ordinal() + 1;
+        widgetToAdd = WidgetToAdd.values()[index >= WidgetToAdd.values().length ? 0 : index];
+        return true;
     }
 
 
@@ -103,22 +158,24 @@ public class ProfileEditorScreen extends Screen {
 
     private boolean onRightMouseClick(double mouseX, double mouseY) {
         if (hoveredWidget != null) {
-            UltimateHud.LOGGER.info("OPEN CONFIG MENU FOR: " + hoveredWidget.getName()); //TODO: remove
-//            var previousScreen = client.currentScreen;
-//            var id = hoveredWidget.getIdentifier().toUnderscoreSeparatedString();
-//            client.setScreen(AutoConfig.getScreen(previousScreen, id, hoveredWidget));
+            var previousScreen = client.currentScreen;
+            var id = hoveredWidget.getIdentifier().toUnderscoreSeparatedString();
+            client.setScreen(AutoConfig.getScreen(previousScreen, id, hoveredWidget));
             return true;
         } else {
             //TODO: open OverlaySelectionScreen instead of this temporary hack
-            var firstOverlay = HudManager.currentProfile.belowHudOverlays.get(0);
-            if (firstOverlay instanceof DamageFlashOverlay damageFlashOverlay) {
-                UltimateHud.LOGGER.info("OPEN CONFIG MENU FOR: " + damageFlashOverlay.getName()); //TODO: remove
-//                var previousScreen = client.currentScreen;
-//                var id = hoveredWidget.getIdentifier().toUnderscoreSeparatedString();
-//                client.setScreen(AutoConfig.getScreen(previousScreen, id, hoveredWidget));
+            if (!HudManager.currentProfile.belowHudOverlays.isEmpty()) {
+                var firstOverlay = HudManager.currentProfile.belowHudOverlays.get(0);
+                if (firstOverlay instanceof DamageFlashOverlay damageFlashOverlay) {
+                    var previousScreen = client.currentScreen;
+                    var id = damageFlashOverlay.getIdentifier().toUnderscoreSeparatedString();
+                    client.setScreen(AutoConfig.getScreen(previousScreen, id, damageFlashOverlay));
+                    return true;
+                }
             }
-            return true;
         }
+
+        return false;
     }
 
 
