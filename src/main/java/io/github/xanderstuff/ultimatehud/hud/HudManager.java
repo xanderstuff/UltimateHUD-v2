@@ -30,7 +30,7 @@ public class HudManager {
         //TODO: select profile to use based on which server/singleplayer world we logged on to, or use the default profile
     }
 
-    private static void updateWidgetPositions(PlayerEntity player) {
+    public static void updateWidgetPositions(PlayerEntity player) {
         int width = MinecraftClient.getInstance().getWindow().getScaledWidth();
         int height = MinecraftClient.getInstance().getWindow().getScaledHeight();
         var windowPosition = new Vector2d(0, 0);
@@ -50,8 +50,6 @@ public class HudManager {
     }
 
     public static void renderWidgets(MatrixStack matrixStack, float tickDelta, PlayerEntity player) {
-        updateWidgetPositions(player);
-
         for (Widget widget : currentProfile.widgetsInRenderingOrder) {
             widget.render(matrixStack, (int) widget.cachedPosition.x, (int) widget.cachedPosition.y, tickDelta, player);
         }

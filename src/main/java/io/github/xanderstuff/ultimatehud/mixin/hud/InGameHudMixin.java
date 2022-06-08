@@ -29,6 +29,8 @@ public class InGameHudMixin {
         if (isEditorScreenOpen) {
             ((ProfileEditorScreen) client.currentScreen).drawBackground(matrixStack);
         }
+
+        HudManager.updateWidgetPositions(client.player);
     }
 
     //FIXME: RETURN is after the debug hud (F3), but HUD stuff should be rendered before the debug hud (we don't want to cover it)
