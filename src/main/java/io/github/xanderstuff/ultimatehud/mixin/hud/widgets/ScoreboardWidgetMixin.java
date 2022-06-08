@@ -6,45 +6,61 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.scoreboard.ScoreboardObjective;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(InGameHud.class)
 public abstract class ScoreboardWidgetMixin {
-//    @Shadow
-//    private int scaledWidth;
-//    @Shadow
-//    private int scaledHeight;
-//    @Final
-//    @Shadow
-//    private MinecraftClient client;
+    @Shadow
+    private int scaledWidth;
+    @Shadow
+    private int scaledHeight;
+    @Final
+    @Shadow
+    private MinecraftClient client;
 
-//    @Inject(method = "renderExperienceBar", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", args = "ldc=expLevel"))
-//    private void ultimatehud$ScoreboardWidgetMixin$renderPre(MatrixStack matrixStack, int x, CallbackInfo ci) {
-//        int originalX = (scaledWidth - (int) ExperienceLevelWidget.getInstance().getWidth(client.player) - 1) / 2;
-//        int originalY = scaledHeight - 31 - 4 - 1;
-//        int newX = (int) ExperienceLevelWidget.getInstance().cachedPosition.x - originalX;
-//        int newY = (int) ExperienceLevelWidget.getInstance().cachedPosition.y - originalY;
-//
-//        matrixStack.push();
-//        //TESTING: try scaling by 2x (note: widget width/height also needs to be scaled, and the position still seems incorrect)
-////        matrixStack.translate(originalX, originalY, 0);
-////        matrixStack.scale(2, 2, 0);
-////        matrixStack.translate(-originalX, -originalY, 0);
-////        matrixStack.translate(newX / 2.0, newY / 2.0, 0);
-//
-//        matrixStack.translate(newX, newY, 0);
-//    }
-//
-//    @Inject(method = "renderExperienceBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;pop()V", ordinal = 1))
-//    private void ultimatehud$ScoreboardWidgetMixin$renderPost(MatrixStack matrixStack, int x, CallbackInfo ci) {
-//        matrixStack.pop();
-//    }
+    @Inject(at = @At("HEAD"), method = "renderScoreboardSidebar")
+    private void ultimatehud$ScoreboardWidgetMixin$renderPre(MatrixStack matrixStack, ScoreboardObjective objective, CallbackInfo ci) {
+        int originalX = scaledWidth - (int) ScoreboardWidget.getInstance().getWidth(client.player) - 1;
+        int originalY = (int) ((scaledHeight * 0.5) - (ScoreboardWidget.getInstance().getHeight(client.player) * 0.666666) - 3);
+        int newX = (int) ScoreboardWidget.getInstance().cachedPosition.x - originalX;
+        int newY = (int) ScoreboardWidget.getInstance().cachedPosition.y - originalY;
+
+        matrixStack.push();
+        matrixStack.translate(newX, newY, 0);
+    }
+
+    @Inject(at = @At("RETURN"), method = "renderScoreboardSidebar")
+    private void ultimatehud$ScoreboardWidgetMixin$renderPost(MatrixStack matrixStack, ScoreboardObjective objective, CallbackInfo ci) {
+        matrixStack.pop();
+    }
+
+
+    @ModifyArgs(method = "renderScoreboardSidebar", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I", ordinal = 0))
+    private void ultimatehud$ScoreboardWidgetMixin$playerText(Args args) {
+//        int newColor = MathHelper.hsvToRgb(DrawUtil.timeMillis() * 0.0005F % 1.0F, 0.8F, 1.0F);
+//        args.set(4, newColor);
+        args.set(4, DrawUtil.decodeARGB(ScoreboardWidget.getInstance().playerTextColor));
+    }
+
+
+    @ModifyArgs(method = "renderScoreboardSidebar", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I", ordinal = 1))
+    private void ultimatehud$ScoreboardWidgetMixin$headerText(Args args) {
+//        int newColor = MathHelper.hsvToRgb(DrawUtil.timeMillis() * 0.0005F % 1.0F, 0.8F, 1.0F);
+//        args.set(4, newColor);
+        args.set(4, DrawUtil.decodeARGB(ScoreboardWidget.getInstance().headerTextColor));
+    }
 
 
     @ModifyArgs(method = "renderScoreboardSidebar", at = @At(value = "INVOKE",
