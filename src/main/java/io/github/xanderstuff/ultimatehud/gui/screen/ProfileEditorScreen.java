@@ -1,5 +1,6 @@
 package io.github.xanderstuff.ultimatehud.gui.screen;
 
+import io.github.xanderstuff.ultimatehud.UltimateHud;
 import io.github.xanderstuff.ultimatehud.config.AutoConfig;
 import io.github.xanderstuff.ultimatehud.hud.HudManager;
 import io.github.xanderstuff.ultimatehud.hud.Widget;
@@ -28,6 +29,7 @@ public class ProfileEditorScreen extends Screen {
 
     //TODO: remove this temporary widget selection code
     private WidgetToAdd widgetToAdd = WidgetToAdd.TEXT;
+
     private enum WidgetToAdd {
         TEXT("Text", () -> WidgetRegistry.get(TextWidget.IDENTIFIER)),
         TEXT3("Text3", () -> WidgetRegistry.get(TextWidget.IDENTIFIER)),
@@ -70,16 +72,20 @@ public class ProfileEditorScreen extends Screen {
         hoveredWidget = locateWidget(mouseX, mouseY);
 
         //TODO: remove this temporary instructions message
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Hi there!", 48, 32, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "You've found the UltimateHUD Editor Screen", 48, 32 + 9 * 1, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "This mod is a WIP, so this editor isn't finished", 48, 32 + 9 * 2, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Drag to move widgets", 48, 32 + 9 * 3, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Left click to select a widget", 48, 32 + 9 * 4, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Right click to change a widget's settings", 48, 32 + 9 * 5, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- WASD / Arrow keys to move a selected widget by 1px", 48, 32 + 9 * 6, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Scroll wheel to choose a new widget", 48, 32 + 9 * 7, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- Middle click to add a new widget", 48, 32 + 9 * 8, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget to add: " + widgetToAdd.name, 48, 32 + 9 * 9, 0x80FFFFFF);
+        int line = 0;
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Hi there!", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "You've found the §9UltimateHUD Editor Screen§r", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "This mod is a WIP, so this editor isn't finished", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Changes will not be saved after restart (yet)", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "And you can't delete vanilla hud elements (yet)", 48, 32 + 9 * line++, 0xAAAAAAAA);
+
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6Drag§r to move widgets", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6Left click§r to select a widget", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6Right click§r to change a widget's settings", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6WASD / Arrow keys§r to move a selected widget by 1px", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6Scroll wheel§r to choose a new widget", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6Middle click§r to add a new widget", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget to add: §a" + widgetToAdd.name, 48, 32 + 9 * line++, 0xAAAAAAAA);
 
         String name = "";
         String id = "";
@@ -87,8 +93,8 @@ public class ProfileEditorScreen extends Screen {
             name = hoveredWidget.getName();
             id = hoveredWidget.getIdentifier().toString();
         }
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget name: " + name, 48, 32 + 9 * 10, 0x80FFFFFF);
-        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget ID: " + id, 48, 32 + 9 * 11, 0x80FFFFFF);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget name: " + name, 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget ID: " + id, 48, 32 + 9 * line++, 0xAAAAAAAA);
 
 
         for (Widget widget : HudManager.currentProfile.widgetsInRenderingOrder) {
@@ -103,13 +109,6 @@ public class ProfileEditorScreen extends Screen {
                 color = WIDGET_OVERLAY_COLOR;
             }
             DrawUtil.drawBox(matrixStack, (int) widget.cachedPosition.x, (int) widget.cachedPosition.y, (int) widget.getWidth(client.player), (int) widget.getHeight(client.player), color);
-
-            // show the name of the widget
-            //TODO: this would probably be better to be in a dedicated position on-screen (like in the toolbar)
-//            int x = (int) (widget.cachedPosition.x + widget.getWidth(client.player) / 2);
-//            int y = (int) (widget.cachedPosition.y + widget.getHeight(client.player) / 2) - 4;
-//            DrawableHelper.drawCenteredText(matrixStack, textRenderer, widget.getName(), x, y, 0xFFFFFFFF);
-//            DrawableHelper.drawCenteredText(matrixStack, textRenderer, widget.getIdentifier().toString(), x, y, 0xFFFFFFFF);
         }
 
         var screenPos = new Vector2d(0, 0);
@@ -117,6 +116,35 @@ public class ProfileEditorScreen extends Screen {
         for (TreeNode<Widget> widgetTreeNode : HudManager.currentProfile.widgetPositioningTree) {
             renderWidgetConnections(matrixStack, widgetTreeNode, screenPos, screenSize);
         }
+    }
+
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (UltimateHud.profileEditorKB.matchesKey(keyCode, scanCode)) {
+            // press profileEditorKB (default: RIGHT SHIFT) to exit editor
+            onClose();
+            return true;
+        }
+
+        if (selectedWidget != null) {
+            // press WASD / arrow keys to move the selectedWidget's offset
+            // client.options.forwardKey.matchesKey(keyCode, scanCode)
+            if (keyCode == GLFW_KEY_UP || keyCode == GLFW_KEY_W) {
+                selectedWidget.offset.add(0, -1);
+                return true;
+            } else if (keyCode == GLFW_KEY_DOWN || keyCode == GLFW_KEY_S) {
+                selectedWidget.offset.add(0, 1);
+                return true;
+            } else if (keyCode == GLFW_KEY_LEFT || keyCode == GLFW_KEY_A) {
+                selectedWidget.offset.add(-1, 0);
+                return true;
+            } else if (keyCode == GLFW_KEY_RIGHT || keyCode == GLFW_KEY_D) {
+                selectedWidget.offset.add(1, 0);
+                return true;
+            }
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
 
