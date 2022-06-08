@@ -1,6 +1,7 @@
 package io.github.xanderstuff.ultimatehud.hud.widgets.minecraft;
 
 import com.google.gson.annotations.Expose;
+import io.github.xanderstuff.ultimatehud.config.AutoConfig;
 import io.github.xanderstuff.ultimatehud.hud.Widget;
 import io.github.xanderstuff.ultimatehud.registry.WidgetRegistry;
 import net.minecraft.client.util.math.MatrixStack;
@@ -11,7 +12,14 @@ public class HotbarWidget extends Widget {
     public static final Identifier IDENTIFIER = new Identifier("minecraft", "hotbar");
     private static final HotbarWidget INSTANCE = new HotbarWidget();
     @Expose
-    public boolean twirlBlocks = false; //TODO: make this an enum for different item movement effects (like item entity -style rotation)
+    @AutoConfig.ConfigEntry
+    public boolean twirlItems = false; //TODO: make this an enum for different item movement effects (like item entity -style rotation)
+    @Expose
+    @AutoConfig.ConfigEntry
+    public boolean twirlOnlyBlocks = true;
+    @Expose
+    @AutoConfig.ConfigEntry(min = 0.1F, max = 5)
+    public float twirlSpeed = 0.5F;
 
     static {
         WidgetRegistry.register(IDENTIFIER, HotbarWidget::getInstance);

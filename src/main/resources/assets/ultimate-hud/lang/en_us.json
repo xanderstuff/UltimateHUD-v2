@@ -5,12 +5,17 @@
 
   "widget.ultimate-hud.minecraft_hotbar.name": "Hotbar",
   "config.ultimate-hud.minecraft_hotbar.title": "Hotbar Settings",
+  "config.ultimate-hud.minecraft_hotbar.twirlItems": "Twirl items",
+  "config.ultimate-hud.minecraft_hotbar.twirlOnlyBlocks": "Twirl only blocks",
+  "config.ultimate-hud.minecraft_hotbar.twirlSpeed": "Twirl speed",
 
   "widget.ultimate-hud.minecraft_experience_bar.name": "Experience Bar",
   "config.ultimate-hud.minecraft_experience_bar.title": "Experience Bar Settings",
 
   "widget.ultimate-hud.minecraft_experience_level.name": "Experience Level",
   "config.ultimate-hud.minecraft_experience_level.title": "Experience Level Settings",
+  "config.ultimate-hud.minecraft_experience_level.textColor": "Text color",
+  "config.ultimate-hud.minecraft_experience_level.outlineColor": "Outline color",
 
   "widget.ultimate-hud.minecraft_scoreboard.name": "Scoreboard",
   "config.ultimate-hud.minecraft_scoreboard.title": "Scoreboard Settings",

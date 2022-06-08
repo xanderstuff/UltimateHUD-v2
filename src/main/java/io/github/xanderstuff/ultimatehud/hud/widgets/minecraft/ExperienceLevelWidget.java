@@ -1,6 +1,7 @@
 package io.github.xanderstuff.ultimatehud.hud.widgets.minecraft;
 
 import com.google.gson.annotations.Expose;
+import io.github.xanderstuff.ultimatehud.config.AutoConfig;
 import io.github.xanderstuff.ultimatehud.hud.Widget;
 import io.github.xanderstuff.ultimatehud.registry.WidgetRegistry;
 import io.github.xanderstuff.ultimatehud.util.DrawUtil;
@@ -12,9 +13,11 @@ public class ExperienceLevelWidget extends Widget {
     public static final Identifier IDENTIFIER = new Identifier("minecraft", "experience_level");
     private static final ExperienceLevelWidget INSTANCE = new ExperienceLevelWidget();
     @Expose
-    public int textColor = 0xFF80FF20;
+    @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
+    public String textColor = "#80FF20";
     @Expose
-    public int outlineColor = 0xFF000000;
+    @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
+    public String outlineColor = "#000000";
 
     static {
         WidgetRegistry.register(IDENTIFIER, ExperienceLevelWidget::getInstance);

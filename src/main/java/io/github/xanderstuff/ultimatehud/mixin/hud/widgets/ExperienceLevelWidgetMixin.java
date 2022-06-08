@@ -1,6 +1,7 @@
 package io.github.xanderstuff.ultimatehud.mixin.hud.widgets;
 
 import io.github.xanderstuff.ultimatehud.hud.widgets.minecraft.ExperienceLevelWidget;
+import io.github.xanderstuff.ultimatehud.util.DrawUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
@@ -48,10 +49,10 @@ public abstract class ExperienceLevelWidgetMixin {
     @ModifyArgs(method = "renderExperienceBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/client/util/math/MatrixStack;Ljava/lang/String;FFI)I"))
     private void ultimatehud$ExperienceLevelWidgetMixin$modifyText(Args args) {
         if((int) args.get(4) == 0x80FF20) { // the 0x80FF20 magic number is the hardcoded lime-green text color
-            args.set(4, ExperienceLevelWidget.getInstance().textColor);
+            args.set(4, DrawUtil.decodeARGB(ExperienceLevelWidget.getInstance().textColor));
         }
         else if((int) args.get(4) == 0x000000){ // the 0x000000 magic number is the hardcoded black text outline color
-            args.set(4, ExperienceLevelWidget.getInstance().outlineColor);
+            args.set(4, DrawUtil.decodeARGB(ExperienceLevelWidget.getInstance().outlineColor));
         }
     }
 }

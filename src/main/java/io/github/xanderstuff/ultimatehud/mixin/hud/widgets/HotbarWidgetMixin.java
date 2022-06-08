@@ -52,11 +52,12 @@ public abstract class HotbarWidgetMixin {
     private void ultimatehud$HotbarWidgetMixin$hotbarItemMovement(ItemRenderer itemRenderer, LivingEntity entity, ItemStack itemStack, int x, int y, int seed) {
         MatrixStack ms = RenderSystem.getModelViewStack();
         boolean isBlock = itemRenderer.getHeldItemModel(itemStack, null, entity, seed).hasDepth();
-        if (isBlock && HotbarWidget.getInstance().twirlBlocks) {
+        boolean runAnimation = (isBlock || !HotbarWidget.getInstance().twirlOnlyBlocks) && HotbarWidget.getInstance().twirlItems;
+        if (runAnimation) {
             ms.push();
             ms.translate(x + 8, y + 12, (50 + 100));
 
-            ms.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180 + 180 * MathHelper.sin(DrawUtil.timeMillis() / 2000.0F)));
+            ms.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180 + 180 * MathHelper.sin(DrawUtil.timeMillis() * 0.001F * HotbarWidget.getInstance().twirlSpeed)));
 
             // Attempt at a "tumbling" effect. The rotation point doesn't seem to be centered and the lighting is rotated with the block for some reason. It doesn't look as good without fixing those things
 //            ms.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(DrawUtil.timeMillis() / 20.0f)); // left-right
@@ -70,7 +71,7 @@ public abstract class HotbarWidgetMixin {
 
         itemRenderer.renderInGuiWithOverrides(entity, itemStack, x, y, seed);
 
-        if (isBlock && HotbarWidget.getInstance().twirlBlocks) {
+        if (runAnimation) {
             ms.pop();
             RenderSystem.applyModelViewMatrix();
         }
