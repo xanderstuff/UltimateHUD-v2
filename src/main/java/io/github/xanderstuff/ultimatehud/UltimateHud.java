@@ -13,10 +13,11 @@ import org.slf4j.LoggerFactory;
 public class UltimateHud implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("UltimateHUD");
     public static final String MODID = "ultimate-hud";
+    public static final KeyBind profileEditorKB = new KeyBind("key.ultimate-hud.open_profile_editor", GLFW.GLFW_KEY_RIGHT_SHIFT, "key.categories.ultimate-hud");
 
     @Override
     public void onInitializeClient() {
-        KeyBind profileEditorKB = KeyBindingHelper.registerKeyBinding(new KeyBind("key.ultimate-hud.open_profile_editor", GLFW.GLFW_KEY_RIGHT_SHIFT, "key.categories.ultimate-hud"));
+        KeyBindingHelper.registerKeyBinding(profileEditorKB);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (profileEditorKB.wasPressed()) {
