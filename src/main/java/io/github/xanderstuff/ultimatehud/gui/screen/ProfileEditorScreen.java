@@ -5,6 +5,7 @@ import io.github.xanderstuff.ultimatehud.config.AutoConfig;
 import io.github.xanderstuff.ultimatehud.hud.HudManager;
 import io.github.xanderstuff.ultimatehud.hud.Widget;
 import io.github.xanderstuff.ultimatehud.hud.overlays.ultimatehud.DamageFlashOverlay;
+import io.github.xanderstuff.ultimatehud.hud.widgets.ultimatehud.InventorySlotWidget;
 import io.github.xanderstuff.ultimatehud.hud.widgets.ultimatehud.TextWidget;
 import io.github.xanderstuff.ultimatehud.registry.WidgetRegistry;
 import io.github.xanderstuff.ultimatehud.util.DrawUtil;
@@ -32,11 +33,10 @@ public class ProfileEditorScreen extends Screen {
 
     private enum WidgetToAdd {
         TEXT("Text", () -> WidgetRegistry.get(TextWidget.IDENTIFIER)),
-        TEXT3("Text3", () -> WidgetRegistry.get(TextWidget.IDENTIFIER)),
-        TEXT2("Text2", () -> WidgetRegistry.get(TextWidget.IDENTIFIER));
+        INVENTORY_SLOT("Inventory Slot", () -> WidgetRegistry.get(InventorySlotWidget.IDENTIFIER));
 
-        String name;
-        Supplier<Widget> makeWidget;
+        final String name;
+        final Supplier<Widget> makeWidget;
 
         WidgetToAdd(String name, Supplier<Widget> makeWidget) {
             this.name = name;

@@ -44,6 +44,30 @@
   "widget.ultimate-hud.ultimate-hud_bar.name": "Bar",
   "config.ultimate-hud.ultimate-hud_bar.title": "Bar Settings",
 
+  "widget.ultimate-hud.ultimate-hud_inventory_slot.name": "Inventory Slot",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.title": "Inventory Slot Settings",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.slotType": "Slot type",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.SlotType.MAINHAND": "Mainhand",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.SlotType.OFFHAND": "Offhand",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.SlotType.ARMOUR_HEAD": "Head",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.SlotType.ARMOUR_CHEST": "Chest",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.SlotType.ARMOUR_LEGS": "Legs",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.SlotType.ARMOUR_FEET": "Feet",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.SlotType.HOTBAR": "Hotbar",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.SlotType.INVENTORY": "Inventory",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.backgroundTexture": "Background texture",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.BackgroundTexture.NONE": "None",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.BackgroundTexture.ROUNDED": "Rounded",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.BackgroundTexture.SQUARE": "Square",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.enum.BackgroundTexture.SOLID_COLOR": "Solid color",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.hideIfEmpty": "Hide if empty",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.backgroundColor": "Background color",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.backgroundColor.tooltip": "Requires: Background texture -> Solid color",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.backgroundOpacity": "Background opacity",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.backgroundOpacity.tooltip": "Requires: Background texture -> Solid color",
+  "config.ultimate-hud.ultimate-hud_inventory_slot.showAndCountDurability": "Show count and durability",
+
+
   "overlay.ultimate-hud.ultimate-hud_damage_flash.name": "Damage Flash",
   "config.ultimate-hud.ultimate-hud_damage_flash.title": "Damage Flash Settings"
 }
