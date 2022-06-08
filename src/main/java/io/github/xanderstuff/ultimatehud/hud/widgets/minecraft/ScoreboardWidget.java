@@ -30,6 +30,12 @@ public class ScoreboardWidget extends Widget {
     public boolean hideScores = false;
     @Expose
     @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
+    public String headerTextColor = "#FFFFFF";
+    @Expose
+    @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
+    public String playerTextColor = "#FFFFFF";
+    @Expose
+    @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
     public String scoreTextColor = "#FF5555"; // this is the value of Formatting.RED.getColorValue()
     @Expose
     @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
@@ -39,16 +45,10 @@ public class ScoreboardWidget extends Widget {
     public float headerBackgroundOpacity = 0.4F;
     @Expose
     @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
-    public String headerTextColor = "#FFFFFF";
-    @Expose
-    @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
     public String backgroundColor = "#000000"; //#4C000000
     @Expose
     @AutoConfig.ConfigEntry(min = 0.0, max = 1.0)
     public float backgroundOpacity = 0.3F;
-    @Expose
-    @AutoConfig.ConfigEntry(isColor = true, maxLength = 7)
-    public String playerTextColor = "#FFFFFF";
 
 
     static {
