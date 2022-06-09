@@ -1,9 +1,6 @@
 package io.github.xanderstuff.ultimatehud.hud;
 
-import io.github.xanderstuff.ultimatehud.hud.widgets.minecraft.ExperienceBarWidget;
-import io.github.xanderstuff.ultimatehud.hud.widgets.minecraft.ExperienceLevelWidget;
-import io.github.xanderstuff.ultimatehud.hud.widgets.minecraft.HotbarWidget;
-import io.github.xanderstuff.ultimatehud.hud.widgets.minecraft.ScoreboardWidget;
+import io.github.xanderstuff.ultimatehud.hud.widgets.minecraft.*;
 import io.github.xanderstuff.ultimatehud.registry.WidgetRegistry;
 import io.github.xanderstuff.ultimatehud.util.TreeNode;
 import io.github.xanderstuff.ultimatehud.util.Vector2d;
@@ -96,6 +93,14 @@ public class HudManager {
         xpLevel.anchorPosition = new Vector2d(0.5, 0.0);
         defaultProfile.widgetsInRenderingOrder.add(xpLevel);
         hotbarNode.getChildren().get(0).addChild(xpLevel); //TODO: fix this hack (see above TODO, 9 lines up)
+
+        var armour = WidgetRegistry.get(ArmourIndicatorWidget.IDENTIFIER);
+        armour.referencePosition = new Vector2d(0.0, 1.0);
+        armour.offset = new Vector2d(0, -1 - 17);
+        armour.anchorPosition = new Vector2d(0.0, 0.0);
+        defaultProfile.widgetsInRenderingOrder.add(armour);
+//        hotbarNode.getChildren().get(0).addChild(armour); //TODO: fix this hack
+        hotbarNode.addChild(armour); //TODO: fix this hack
 
 
         var scoreboard = WidgetRegistry.get(ScoreboardWidget.IDENTIFIER);
