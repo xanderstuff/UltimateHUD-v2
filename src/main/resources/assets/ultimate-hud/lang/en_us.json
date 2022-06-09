@@ -20,6 +20,9 @@
   "widget.ultimate-hud.minecraft_armour_indicator.name": "Armour Indicator",
   "config.ultimate-hud.minecraft_armour_indicator.title": "Armour Indicator Settings",
 
+  "widget.ultimate-hud.minecraft_food_indicator.name": "Food Indicator",
+  "config.ultimate-hud.minecraft_food_indicator.title": "Food Indicator Settings",
+
   "widget.ultimate-hud.minecraft_scoreboard.name": "Scoreboard",
   "config.ultimate-hud.minecraft_scoreboard.title": "Scoreboard Settings",
   "config.ultimate-hud.minecraft_scoreboard.hideScores": "Hide scores",

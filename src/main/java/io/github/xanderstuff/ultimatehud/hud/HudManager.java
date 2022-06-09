@@ -102,6 +102,13 @@ public class HudManager {
 //        hotbarNode.getChildren().get(0).addChild(armour); //TODO: fix this hack
         hotbarNode.addChild(armour); //TODO: fix this hack
 
+        var food = WidgetRegistry.get(FoodIndicatorWidget.IDENTIFIER);
+        food.referencePosition = new Vector2d(1.0, 1.0);
+        food.offset = new Vector2d(0, -8);
+        food.anchorPosition = new Vector2d(1.0, 0.0);
+        defaultProfile.widgetsInRenderingOrder.add(food);
+        hotbarNode.addChild(food); //TODO: fix this hack
+
 
         var scoreboard = WidgetRegistry.get(ScoreboardWidget.IDENTIFIER);
         scoreboard.referencePosition = new Vector2d(1.0, 0.666666);

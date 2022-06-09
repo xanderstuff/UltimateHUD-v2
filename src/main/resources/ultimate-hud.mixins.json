@@ -10,6 +10,7 @@
     "hud.widgets.ExperienceLevelWidgetMixin",
     "hud.widgets.HotbarWidgetMixin",
     "hud.widgets.ArmourIndicatorWidgetMixin",
+    "hud.widgets.FoodIndicatorWidgetMixin",
     "hud.widgets.ScoreboardWidgetMixin"
   ],
   "injectors": {
