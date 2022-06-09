@@ -11,6 +11,7 @@
     "hud.widgets.HotbarWidgetMixin",
     "hud.widgets.ArmourIndicatorWidgetMixin",
     "hud.widgets.FoodIndicatorWidgetMixin",
+    "hud.widgets.AirIndicatorWidgetMixin",
     "hud.widgets.ScoreboardWidgetMixin"
   ],
   "injectors": {

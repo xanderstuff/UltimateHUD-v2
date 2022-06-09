@@ -23,6 +23,9 @@
   "widget.ultimate-hud.minecraft_food_indicator.name": "Food Indicator",
   "config.ultimate-hud.minecraft_food_indicator.title": "Food Indicator Settings",
 
+  "widget.ultimate-hud.minecraft_air_indicator.name": "Air Indicator",
+  "config.ultimate-hud.minecraft_air_indicator.title": "Air Indicator Settings",
+
   "widget.ultimate-hud.minecraft_scoreboard.name": "Scoreboard",
   "config.ultimate-hud.minecraft_scoreboard.title": "Scoreboard Settings",
   "config.ultimate-hud.minecraft_scoreboard.hideScores": "Hide scores",
