@@ -168,14 +168,7 @@ public class ProfileEditorScreen extends Screen {
         } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             return onRightMouseClick(mouseX, mouseY);
         } else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
-            //TODO: remove this temporary widget selection code
-//            var newWidget = (TextWidget) WidgetRegistry.get(TextWidget.IDENTIFIER);
-            var newWidget = widgetToAdd.makeWidget.get();
-            newWidget.referencePosition = new Vector2d(0.0, 0.0);
-            newWidget.offset = new Vector2d(mouseX, mouseY);
-            newWidget.anchorPosition = new Vector2d(0.0, 0.0);
-            HudManager.currentProfile.widgetsInRenderingOrder.add(newWidget);
-            HudManager.currentProfile.widgetPositioningTree.add(new TreeNode<>(newWidget, null));
+            addNewWidget(mouseX, mouseY);
             return true;
         }
         return false;
@@ -227,6 +220,28 @@ public class ProfileEditorScreen extends Screen {
             return true;
         }
         return false;
+    }
+
+
+    private void addNewWidget(double mouseX, double mouseY) {
+        //TODO: remove this temporary widget selection code and use WidgetSelectionScreen instead
+        var newWidget = widgetToAdd.makeWidget.get();
+
+        var xPercent = mouseX / width;
+        var yPercent = mouseY / height;
+        var newXPercent = Math.round(xPercent * 2) / 2.0F;
+        var newYPercent = Math.round(yPercent * 2) / 2.0F;
+
+        newWidget.referencePosition = new Vector2d(newXPercent, newYPercent);
+        newWidget.anchorPosition = new Vector2d(newXPercent, newYPercent);
+        newWidget.offset = new Vector2d(0, 0);
+        HudManager.currentProfile.widgetsInRenderingOrder.add(newWidget);
+        HudManager.currentProfile.widgetPositioningTree.add(new TreeNode<>(newWidget, null));
+
+        // re-adjust newWidget's position (offset) so that it ends up centered at the cursor
+        HudManager.updateWidgetPositions(client.player);
+        var currentPosition = newWidget.cachedPosition.add(newWidget.getSize(client.player).multiply(0.5F));
+        newWidget.offset = new Vector2d(mouseX, mouseY).subtract(currentPosition);
     }
 
 
