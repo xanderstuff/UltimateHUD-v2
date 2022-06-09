@@ -94,6 +94,13 @@ public class HudManager {
         defaultProfile.widgetsInRenderingOrder.add(xpLevel);
         hotbarNode.getChildren().get(0).addChild(xpLevel); //TODO: fix this hack (see above TODO, 9 lines up)
 
+        var health = WidgetRegistry.get(HealthIndicatorWidget.IDENTIFIER);
+        health.referencePosition = new Vector2d(0.0, 1.0);
+        health.offset = new Vector2d(0, -8);
+        health.anchorPosition = new Vector2d(0.0, 0.0);
+        defaultProfile.widgetsInRenderingOrder.add(health);
+        hotbarNode.addChild(health); //TODO: fix this hack
+
         var armour = WidgetRegistry.get(ArmourIndicatorWidget.IDENTIFIER);
         armour.referencePosition = new Vector2d(0.0, 1.0);
         armour.offset = new Vector2d(0, -1 - 17);

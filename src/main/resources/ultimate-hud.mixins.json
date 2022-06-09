@@ -9,6 +9,7 @@
     "hud.widgets.ExperienceBarWidgetMixin",
     "hud.widgets.ExperienceLevelWidgetMixin",
     "hud.widgets.HotbarWidgetMixin",
+    "hud.widgets.HealthIndicatorWidgetMixin",
     "hud.widgets.ArmourIndicatorWidgetMixin",
     "hud.widgets.FoodIndicatorWidgetMixin",
     "hud.widgets.AirIndicatorWidgetMixin",

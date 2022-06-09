@@ -17,6 +17,9 @@
   "config.ultimate-hud.minecraft_experience_level.textColor": "Text color",
   "config.ultimate-hud.minecraft_experience_level.outlineColor": "Outline color",
 
+  "widget.ultimate-hud.minecraft_health_indicator.name": "Health Indicator",
+  "config.ultimate-hud.minecraft_health_indicator.title": "Health Indicator Settings",
+
   "widget.ultimate-hud.minecraft_armour_indicator.name": "Armour Indicator",
   "config.ultimate-hud.minecraft_armour_indicator.title": "Armour Indicator Settings",
 
