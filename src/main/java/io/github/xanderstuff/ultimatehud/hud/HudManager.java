@@ -103,12 +103,10 @@ public class HudManager {
 
         var armour = WidgetRegistry.get(ArmourIndicatorWidget.IDENTIFIER);
         armour.referencePosition = new Vector2d(0.0, 1.0);
-        armour.offset = new Vector2d(0, -1 - 17);
+        armour.offset = new Vector2d(0, -1);
         armour.anchorPosition = new Vector2d(0.0, 0.0);
         defaultProfile.widgetsInRenderingOrder.add(armour);
-        //TODO: this should be connected to the health widget instead
-//        hotbarNode.getChildren().get(0).addChild(armour); //TODO: fix this hack
-        hotbarNode.addChild(armour); //TODO: fix this hack
+        hotbarNode.getChildren().get(1).addChild(armour); //TODO: fix this hack
 
         var food = WidgetRegistry.get(FoodIndicatorWidget.IDENTIFIER);
         food.referencePosition = new Vector2d(1.0, 1.0);
@@ -119,11 +117,11 @@ public class HudManager {
 
         var air = WidgetRegistry.get(AirIndicatorWidget.IDENTIFIER);
         air.referencePosition = new Vector2d(1.0, 1.0);
-        air.offset = new Vector2d(0, -1 - 17);
+        air.offset = new Vector2d(0, -1);
         air.anchorPosition = new Vector2d(1.0, 0.0);
         defaultProfile.widgetsInRenderingOrder.add(air);
-        //TODO: this should be connected to the mount health widget instead
-        hotbarNode.addChild(air); //TODO: fix this hack
+        //TODO: this should be connected to the mount health widget instead of the food widget
+        hotbarNode.getChildren().get(2).addChild(air); //TODO: fix this hack
 
 
         var scoreboard = WidgetRegistry.get(ScoreboardWidget.IDENTIFIER);
