@@ -54,12 +54,15 @@ public class TreeNode<T> {
             return children;
         } else {
             for (TreeNode<T> child : children) {
+                //TODO: children should inherit the anchor position of the deleted Widget
+                //TODO: adjust offset so final position is the same
                 child.parent = parent;
                 parent.children.add(child);
             }
+            parent.children.remove(this); //TODO: this code path is untested
 //            parent = null; // is setting this reference to null necessary? I'm pretty sure it's "not"
 //            children = null;
-            return null;
+            return List.of();
         }
     }
 
@@ -87,5 +90,19 @@ public class TreeNode<T> {
         }
 
         return false;
+    }
+
+    public TreeNode<T> get(T child) {
+        if (this.data == child) {
+            return this;
+        }
+        for (TreeNode<T> next : children) {
+            var result = next.get(child); // recursion!
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return null;
     }
 }

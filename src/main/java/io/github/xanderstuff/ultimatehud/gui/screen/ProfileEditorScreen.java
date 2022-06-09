@@ -89,6 +89,7 @@ public class ProfileEditorScreen extends Screen {
         DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6WASD / Arrow keys§r to move a selected widget by 1px", 48, 32 + 9 * line++, 0xAAAAAAAA);
         DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6Scroll wheel§r to choose a new widget", 48, 32 + 9 * line++, 0xAAAAAAAA);
         DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6Middle click§r to add a new widget", 48, 32 + 9 * line++, 0xAAAAAAAA);
+        DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "- §6Backspace§r to delete the selected widget", 48, 32 + 9 * line++, 0xAAAAAAAA);
         DrawUtil.getTextRenderer().drawWithShadow(matrixStack, "Widget to add: §a" + widgetToAdd.name, 48, 32 + 9 * line++, 0xAAAAAAAA);
 
         String name = "";
@@ -148,6 +149,14 @@ public class ProfileEditorScreen extends Screen {
                 return true;
             }
         }
+
+        if (selectedWidget != null && !selectedWidget.isSingleInstance()){
+            if (keyCode == GLFW_KEY_BACKSPACE || keyCode == GLFW_KEY_DELETE){
+                HudManager.currentProfile.deleteWidget(selectedWidget);
+                selectedWidget = null;
+            }
+        }
+
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -166,7 +175,7 @@ public class ProfileEditorScreen extends Screen {
             newWidget.offset = new Vector2d(mouseX, mouseY);
             newWidget.anchorPosition = new Vector2d(0.0, 0.0);
             HudManager.currentProfile.widgetsInRenderingOrder.add(newWidget);
-            HudManager.currentProfile.widgetPositioningTree.add(new TreeNode<Widget>(newWidget, null));
+            HudManager.currentProfile.widgetPositioningTree.add(new TreeNode<>(newWidget, null));
             return true;
         }
         return false;
