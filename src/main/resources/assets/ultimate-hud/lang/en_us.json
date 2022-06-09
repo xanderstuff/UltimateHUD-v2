@@ -95,6 +95,11 @@
   "config.ultimate-hud.ultimate-hud_bar.enum.Style.NOTCHED_10": "10 Sections",
   "config.ultimate-hud.ultimate-hud_bar.enum.Style.NOTCHED_12": "12 Sections",
   "config.ultimate-hud.ultimate-hud_bar.enum.Style.NOTCHED_20": "20 Sections",
+  "config.ultimate-hud.ultimate-hud_bar.enum.class_1261.PROGRESS": "None",
+  "config.ultimate-hud.ultimate-hud_bar.enum.class_1261.NOTCHED_6": "6 Sections",
+  "config.ultimate-hud.ultimate-hud_bar.enum.class_1261.NOTCHED_10": "10 Sections",
+  "config.ultimate-hud.ultimate-hud_bar.enum.class_1261.NOTCHED_12": "12 Sections",
+  "config.ultimate-hud.ultimate-hud_bar.enum.class_1261.NOTCHED_20": "20 Sections",
 
   "widget.ultimate-hud.ultimate-hud_inventory_slot.name": "Inventory Slot",
   "config.ultimate-hud.ultimate-hud_inventory_slot.title": "Inventory Slot Settings",
