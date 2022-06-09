@@ -5,6 +5,7 @@ import io.github.xanderstuff.ultimatehud.config.AutoConfig;
 import io.github.xanderstuff.ultimatehud.hud.HudManager;
 import io.github.xanderstuff.ultimatehud.hud.Widget;
 import io.github.xanderstuff.ultimatehud.hud.overlays.ultimatehud.DamageFlashOverlay;
+import io.github.xanderstuff.ultimatehud.hud.widgets.eastereggs.PopCatWidget;
 import io.github.xanderstuff.ultimatehud.hud.widgets.ultimatehud.BarWidget;
 import io.github.xanderstuff.ultimatehud.hud.widgets.ultimatehud.InventorySlotWidget;
 import io.github.xanderstuff.ultimatehud.hud.widgets.ultimatehud.TextWidget;
@@ -34,8 +35,9 @@ public class ProfileEditorScreen extends Screen {
 
     private enum WidgetToAdd {
         TEXT("Text", () -> WidgetRegistry.get(TextWidget.IDENTIFIER)),
+        BAR("Bar", () -> WidgetRegistry.get(BarWidget.IDENTIFIER)),
         INVENTORY_SLOT("Inventory Slot", () -> WidgetRegistry.get(InventorySlotWidget.IDENTIFIER)),
-        BAR("Bar", () -> WidgetRegistry.get(BarWidget.IDENTIFIER));
+        POP_CAT("Pop Cat", () -> WidgetRegistry.get(PopCatWidget.IDENTIFIER));
 
         final String name;
         final Supplier<Widget> makeWidget;

@@ -108,6 +108,19 @@
   "config.ultimate-hud.ultimate-hud_inventory_slot.showAndCountDurability": "Show count and durability",
 
 
+  "widget.ultimate-hud.easter_eggs_pop_cat.name": "Pop Cat",
+  "config.ultimate-hud.easter_eggs_pop_cat.title": "Pop Cat Settings",
+  "config.ultimate-hud.easter_eggs_pop_cat.size": "Size",
+  "config.ultimate-hud.easter_eggs_pop_cat.rotation": "Rotation",
+  "config.ultimate-hud.easter_eggs_pop_cat.enum.Rotation.UP": "Up",
+  "config.ultimate-hud.easter_eggs_pop_cat.enum.Rotation.DOWN": "Down",
+  "config.ultimate-hud.easter_eggs_pop_cat.enum.Rotation.LEFT": "Left",
+  "config.ultimate-hud.easter_eggs_pop_cat.enum.Rotation.RIGHT": "Right",
+  "config.ultimate-hud.easter_eggs_pop_cat.facingDirection": "Facing direction",
+  "config.ultimate-hud.easter_eggs_pop_cat.enum.Direction.LEFT": "Left",
+  "config.ultimate-hud.easter_eggs_pop_cat.enum.Direction.RIGHT": "Right",
+
+
   "overlay.ultimate-hud.ultimate-hud_damage_flash.name": "Damage Flash",
   "config.ultimate-hud.ultimate-hud_damage_flash.title": "Damage Flash Settings"
 }
