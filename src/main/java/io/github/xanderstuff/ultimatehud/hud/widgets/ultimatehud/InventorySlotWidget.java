@@ -11,6 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
 public class InventorySlotWidget extends Widget {
@@ -54,12 +55,14 @@ public class InventorySlotWidget extends Widget {
 
 
     public enum SlotType {
-        MAINHAND,
-        OFFHAND,
         ARMOUR_HEAD,
         ARMOUR_CHEST,
         ARMOUR_LEGS,
         ARMOUR_FEET,
+        MAIN_HAND,
+        OFF_HAND,
+        LEFT_HAND,
+        RIGHT_HAND,
 //        HOTBAR,
 //        INVENTORY,
     }
@@ -106,6 +109,9 @@ public class InventorySlotWidget extends Widget {
         RenderSystem.defaultBlendFunc();
 
         switch (backgroundTexture) {
+            case NONE -> {
+                // no-op
+            }
             case ROUNDED -> {
                 RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
                 // use the offhand slot texture
@@ -137,11 +143,12 @@ public class InventorySlotWidget extends Widget {
             case ARMOUR_CHEST -> player.getEquippedStack(EquipmentSlot.CHEST);
             case ARMOUR_LEGS -> player.getEquippedStack(EquipmentSlot.LEGS);
             case ARMOUR_FEET -> player.getEquippedStack(EquipmentSlot.FEET);
-            case OFFHAND -> player.getEquippedStack(EquipmentSlot.OFFHAND);
-            case MAINHAND -> player.getEquippedStack(EquipmentSlot.MAINHAND);
+            case MAIN_HAND -> player.getEquippedStack(EquipmentSlot.MAINHAND);
+            case OFF_HAND -> player.getEquippedStack(EquipmentSlot.OFFHAND);
+            case LEFT_HAND -> player.getEquippedStack(player.getMainArm() == Arm.LEFT ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+            case RIGHT_HAND -> player.getEquippedStack(player.getMainArm() == Arm.RIGHT ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
 //            case HOTBAR -> inv.main.get(slotIndex % 9);
 //            case INVENTORY -> inv.main.get((slotIndex - 9) % 27);
-            default -> ItemStack.EMPTY;
         };
     }
 }
