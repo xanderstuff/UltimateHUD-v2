@@ -7,6 +7,7 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -75,5 +76,14 @@ public abstract class HotbarWidgetMixin {
             ms.pop();
             RenderSystem.applyModelViewMatrix();
         }
+    }
+
+    @Redirect(
+            method = "renderHotbar",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getOffHandStack()Lnet/minecraft/item/ItemStack;")
+    )
+    private ItemStack ultimatehud$HotbarWidgetMixin$disableOffHandSlot(PlayerEntity playerEntity) {
+        // we want to disable this so that an InventorySlotWidget can be used instead, for more user-customization (such as changing its position)
+        return ItemStack.EMPTY; // InGameHud::renderHotbar hides the off hand slot if it's empty
     }
 }

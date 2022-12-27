@@ -123,6 +123,15 @@ public class HudManager {
         //TODO: this should be connected to the mount health widget instead of the food widget
         hotbarNode.getChildren().get(2).addChild(air); //TODO: fix this hack
 
+        var offHandSlot = (InventorySlotWidget)WidgetRegistry.get(InventorySlotWidget.IDENTIFIER);
+        offHandSlot.referencePosition = new Vector2d(1.0, 1.0);
+        offHandSlot.offset = new Vector2d(-7, 0);
+        offHandSlot.anchorPosition = new Vector2d(0.0, 1.0);
+        offHandSlot.slotType = InventorySlotWidget.SlotType.OFF_HAND;
+        offHandSlot.hideIfEmpty = true;
+        defaultProfile.widgetsInRenderingOrder.add(offHandSlot);
+        hotbarNode.addChild(offHandSlot);
+
 
         var scoreboard = WidgetRegistry.get(ScoreboardWidget.IDENTIFIER);
         scoreboard.referencePosition = new Vector2d(1.0, 0.666666);
