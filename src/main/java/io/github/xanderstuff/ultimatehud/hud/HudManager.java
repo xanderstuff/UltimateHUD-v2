@@ -1,6 +1,7 @@
 package io.github.xanderstuff.ultimatehud.hud;
 
 import io.github.xanderstuff.ultimatehud.hud.widgets.minecraft.*;
+import io.github.xanderstuff.ultimatehud.hud.widgets.ultimatehud.InventorySlotWidget;
 import io.github.xanderstuff.ultimatehud.registry.WidgetRegistry;
 import io.github.xanderstuff.ultimatehud.util.TreeNode;
 import io.github.xanderstuff.ultimatehud.util.Vector2d;
