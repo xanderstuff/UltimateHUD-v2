@@ -5,6 +5,7 @@ import io.github.xanderstuff.ultimatehud.hud.HudManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.option.KeyBind;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -25,6 +26,8 @@ public class UltimateHud implements ClientModInitializer {
                 client.setScreen(new ProfileEditorScreen(previousScreen));
             }
         });
+
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> HudManager.onServerConnect());
 
         HudManager.init();
     }
