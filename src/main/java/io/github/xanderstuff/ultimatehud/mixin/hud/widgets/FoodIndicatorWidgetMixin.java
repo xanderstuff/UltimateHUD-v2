@@ -31,9 +31,4 @@ public abstract class FoodIndicatorWidgetMixin {
     private void ultimatehud$FoodIndicatorWidgetMixin$renderPost(MatrixStack matrixStack, CallbackInfo ci) {
         matrixStack.pop();
     }
-
-//    @Inject(method = "renderStatusBars", at = @At(shift = At.Shift.AFTER, value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=health"))
-//    private void ultimatehud$HungerIndicatorWidgetMixin$renderPost2(MatrixStack matrixStack, CallbackInfo ci) {
-//        matrixStack.pop();
-//    }
 }
