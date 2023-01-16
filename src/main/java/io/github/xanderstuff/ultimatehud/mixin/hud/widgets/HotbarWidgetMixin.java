@@ -8,8 +8,10 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,13 +48,18 @@ public abstract class HotbarWidgetMixin {
         RenderSystem.applyModelViewMatrix();
     }
 
+    //TODO: replace with MixinExtra's @WrapOperation
     @Redirect(
             method = "renderHotbarItem",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderInGuiWithOverrides(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;III)V")
     )
     private void ultimatehud$HotbarWidgetMixin$hotbarItemMovement(ItemRenderer itemRenderer, LivingEntity entity, ItemStack itemStack, int x, int y, int seed) {
         MatrixStack ms = RenderSystem.getModelViewStack();
-        boolean isBlock = itemRenderer.getHeldItemModel(itemStack, null, entity, seed).hasDepth();
+        // (itemStack.getItem() instanceof BlockItem) - apparently powdered snow buckets are BlockItems...
+        // itemRenderer.getHeldItemModel(...).hasDepth - it seems spyglasses and tridents return true, due to their hardcoded 3D models (and shields use a 3D model too)
+        // itemRenderer.getModels().getModel(...).hasDepth() - I think this actually gives the item model used in the gui rather than in the hand, although shields still return true, due to their 3D model
+        // but combining these conditions seems to give a decent result
+        boolean isBlock = (itemStack.getItem() instanceof BlockItem) && itemRenderer.getModels().getModel(itemStack).hasDepth();
         boolean runAnimation = (isBlock || !HotbarWidget.getInstance().twirlOnlyBlocks) && HotbarWidget.getInstance().twirlItems;
         if (runAnimation) {
             ms.push();
@@ -64,7 +71,7 @@ public abstract class HotbarWidgetMixin {
 //            ms.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(DrawUtil.timeMillis() / 20.0f)); // left-right
 //            ms.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(DrawUtil.timeMillis() / 30.0f)); // up-down
 //            ms.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(DrawUtil.timeMillis() / 50.0f)); // clockwise-counterclockwise
-            //TODO: "rotateBlocks" - I also want to try a simple Y-axis rotation with up-down translation oscillation, akin to item entities on the ground. I think that could also look good
+            //TODO: "rotateBlocks" - I also want to try a simple Y-axis rotation with up-down translation oscillation, akin to item entities on the ground. I think it could also look good
 
             ms.translate(-(x + 8), -(y + 12), -(50 + 100));
             RenderSystem.applyModelViewMatrix();
@@ -83,7 +90,7 @@ public abstract class HotbarWidgetMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getOffHandStack()Lnet/minecraft/item/ItemStack;")
     )
     private ItemStack ultimatehud$HotbarWidgetMixin$disableOffHandSlot(PlayerEntity playerEntity) {
-        // we want to disable this so that an InventorySlotWidget can be used instead, for more user-customization (such as changing its position)
-        return ItemStack.EMPTY; // InGameHud::renderHotbar hides the off hand slot if it's empty
+        // we want to disable this so that an InventorySlotWidget can be used instead, which has more customization options (such as changing its position)
+        return ItemStack.EMPTY; // InGameHud::renderHotbar will hide the off hand slot if it's empty
     }
 }
